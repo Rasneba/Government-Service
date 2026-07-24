@@ -259,22 +259,21 @@ namespace SubCityLetterSystem.Api.Data
 
             if (missingServices.Any()) { context.ServiceTypes.AddRange(missingServices); await context.SaveChangesAsync(); }
 
-            // Workflow Definitions - add if missing by name
-            var existingWfNames = await context.WorkflowDefinitions.Select(w => w.Name).ToListAsync();
+            // Workflow Definitions - add if the service type doesn't have a workflow yet
             var missingWfs = new List<WorkflowDefinition>();
-            if (!existingWfNames.Contains("Birth Registration Workflow"))
+            var brcType = await context.ServiceTypes.FirstAsync(s => s.Code == "BRC");
+            var mrcType = await context.ServiceTypes.FirstAsync(s => s.Code == "MRC");
+            var ridType = await context.ServiceTypes.FirstAsync(s => s.Code == "RID");
+            if (!await context.WorkflowDefinitions.AnyAsync(w => w.ServiceTypeId == brcType.Id))
             {
-                var brcType = await context.ServiceTypes.FirstAsync(s => s.Code == "BRC");
                 missingWfs.Add(new WorkflowDefinition { Name = "Birth Registration Workflow", Description = "Birth certificate registration and issuance", ServiceTypeId = brcType.Id, IsActive = true });
             }
-            if (!existingWfNames.Contains("Marriage Registration Workflow"))
+            if (!await context.WorkflowDefinitions.AnyAsync(w => w.ServiceTypeId == mrcType.Id))
             {
-                var mrcType = await context.ServiceTypes.FirstAsync(s => s.Code == "MRC");
                 missingWfs.Add(new WorkflowDefinition { Name = "Marriage Registration Workflow", Description = "Marriage certificate registration and issuance", ServiceTypeId = mrcType.Id, IsActive = true });
             }
-            if (!existingWfNames.Contains("Standard Service Workflow"))
+            if (!await context.WorkflowDefinitions.AnyAsync(w => w.ServiceTypeId == ridType.Id))
             {
-                var ridType = await context.ServiceTypes.FirstAsync(s => s.Code == "RID");
                 missingWfs.Add(new WorkflowDefinition { Name = "Standard Service Workflow", Description = "Standard workflow for residency and other services", ServiceTypeId = ridType.Id, IsActive = true });
             }
             if (missingWfs.Any()) { context.WorkflowDefinitions.AddRange(missingWfs); await context.SaveChangesAsync(); }
