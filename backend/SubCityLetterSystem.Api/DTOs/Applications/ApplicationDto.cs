@@ -11,6 +11,8 @@ namespace SubCityLetterSystem.Api.DTOs.Applications
         public string? CurrentStep { get; set; }
         public string? AssignedOfficer { get; set; }
         public string Priority { get; set; } = string.Empty;
+        public string? ReissueReason { get; set; }
+        public bool PoliceApproved { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? DueDate { get; set; }
         public bool IsOverdue => DueDate.HasValue && DueDate.Value < DateTime.UtcNow && Status != "Completed" && Status != "Cancelled";
@@ -38,6 +40,12 @@ namespace SubCityLetterSystem.Api.DTOs.Applications
         public DateTime? SubmittedAt { get; set; }
         public DateTime? DueDate { get; set; }
         public DateTime? CompletedAt { get; set; }
+        public string? OriginalCertificateNumber { get; set; }
+        public string? ReissueReason { get; set; }
+        public string? OriginalCertificateDetails { get; set; }
+        public bool PoliceApproved { get; set; }
+        public string? PoliceVerificationNotes { get; set; }
+        public DateTime? PoliceVerifiedAt { get; set; }
         public List<StepHistoryDto> StepHistory { get; set; } = new();
         public List<DocumentDto> Documents { get; set; } = new();
         public List<NoteDto> Notes { get; set; } = new();
@@ -50,6 +58,9 @@ namespace SubCityLetterSystem.Api.DTOs.Applications
         public string Subject { get; set; } = string.Empty;
         public string? Description { get; set; }
         public string Priority { get; set; } = "Normal";
+        public string? OriginalCertificateNumber { get; set; }
+        public string? ReissueReason { get; set; }
+        public string? OriginalCertificateDetails { get; set; }
     }
 
     public class UpdateApplicationStatusDto
@@ -57,6 +68,12 @@ namespace SubCityLetterSystem.Api.DTOs.Applications
         public string Status { get; set; } = string.Empty;
         public string? Notes { get; set; }
         public string? RejectionReason { get; set; }
+    }
+
+    public class PoliceReviewDto
+    {
+        public bool Approved { get; set; }
+        public string? Notes { get; set; }
     }
 
     public class WorkflowStepDto

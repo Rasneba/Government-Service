@@ -68,6 +68,7 @@ builder.Services.AddScoped<IComplaintService, ComplaintService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<ICitizenNotificationService, CitizenNotificationService>();
+builder.Services.AddScoped<IPoliceService, PoliceService>();
 
 builder.Services.AddCors(options =>
 {

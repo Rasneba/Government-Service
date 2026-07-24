@@ -136,6 +136,7 @@ namespace SubCityLetterSystem.Api.Data
                 entity.HasOne(e => e.Citizen).WithMany(c => c.Applications).HasForeignKey(e => e.CitizenId).OnDelete(DeleteBehavior.Restrict);
                 entity.HasOne(e => e.CurrentStep).WithMany().HasForeignKey(e => e.CurrentStepId).OnDelete(DeleteBehavior.SetNull);
                 entity.HasOne(e => e.AssignedOfficer).WithMany().HasForeignKey(e => e.AssignedOfficerId).OnDelete(DeleteBehavior.SetNull);
+                entity.HasOne(e => e.PoliceVerifiedByUser).WithMany().HasForeignKey(e => e.PoliceVerifiedByUserId).OnDelete(DeleteBehavior.SetNull);
             });
 
             modelBuilder.Entity<ApplicationStepHistory>(entity =>

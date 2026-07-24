@@ -13,7 +13,6 @@ namespace SubCityLetterSystem.Api.Data
 
             await context.Database.EnsureCreatedAsync();
 
-            // Seed Organizations
             if (!await context.Organizations.AnyAsync())
             {
                 context.Organizations.AddRange(
@@ -23,175 +22,258 @@ namespace SubCityLetterSystem.Api.Data
                 await context.SaveChangesAsync();
             }
 
-            // Seed Departments
             if (!await context.Departments.AnyAsync())
             {
                 var subCity = await context.Organizations.FirstAsync(o => o.Code == "SUB");
                 var police = await context.Organizations.FirstAsync(o => o.Code == "POL");
-
                 context.Departments.AddRange(
                     new Department { Name = "Administration", Code = "SUB-ADM", OrganizationId = subCity.Id, IsActive = true },
-                    new Department { Name = "Finance", Code = "SUB-FIN", OrganizationId = subCity.Id, IsActive = true },
-                    new Department { Name = "Planning", Code = "SUB-PLN", OrganizationId = subCity.Id, IsActive = true },
+                    new Department { Name = "Civil Registry", Code = "SUB-CRV", OrganizationId = subCity.Id, IsActive = true },
+                    new Department { Name = "Certificate Services", Code = "SUB-CER", OrganizationId = subCity.Id, IsActive = true },
+                    new Department { Name = "Residency Services", Code = "SUB-RES", OrganizationId = subCity.Id, IsActive = true },
                     new Department { Name = "Investigation", Code = "POL-INV", OrganizationId = police.Id, IsActive = true },
-                    new Department { Name = "Patrol", Code = "POL-PAT", OrganizationId = police.Id, IsActive = true },
+                    new Department { Name = "Verification Unit", Code = "POL-VRU", OrganizationId = police.Id, IsActive = true },
                     new Department { Name = "Records", Code = "POL-REC", OrganizationId = police.Id, IsActive = true }
                 );
                 await context.SaveChangesAsync();
             }
 
-            // Seed Users
             if (!await context.Users.AnyAsync())
             {
                 var adminDept = await context.Departments.FirstAsync(d => d.Code == "SUB-ADM");
+                var certDept = await context.Departments.FirstAsync(d => d.Code == "SUB-CER");
                 var subCity = await context.Organizations.FirstAsync(o => o.Code == "SUB");
+                var police = await context.Organizations.FirstAsync(o => o.Code == "POL");
+                var vruDept = await context.Departments.FirstAsync(d => d.Code == "POL-VRU");
+                var invDept = await context.Departments.FirstAsync(d => d.Code == "POL-INV");
 
                 context.Users.AddRange(
-                    new User
-                    {
-                        FullName = "System Administrator",
-                        Username = "admin",
-                        Email = "admin@subcity.gov.et",
-                        PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"),
-                        Role = UserRole.SystemAdministrator,
-                        OrganizationId = subCity.Id,
-                        DepartmentId = adminDept.Id,
-                        IsActive = true
-                    },
-                    new User
-                    {
-                        FullName = "Sub-City Admin",
-                        Username = "subadmin",
-                        Email = "subadmin@subcity.gov.et",
-                        PasswordHash = BCrypt.Net.BCrypt.HashPassword("Sub@123"),
-                        Role = UserRole.SubCityAdministrator,
-                        OrganizationId = subCity.Id,
-                        DepartmentId = adminDept.Id,
-                        IsActive = true
-                    },
-                    new User
-                    {
-                        FullName = "Clerk User",
-                        Username = "clerk",
-                        Email = "clerk@subcity.gov.et",
-                        PasswordHash = BCrypt.Net.BCrypt.HashPassword("Clerk@123"),
-                        Role = UserRole.Clerk,
-                        OrganizationId = subCity.Id,
-                        DepartmentId = adminDept.Id,
-                        IsActive = true
-                    }
+                    new User { FullName = "System Administrator", Username = "admin", Email = "admin@subcity.gov.et", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Admin@123"), Role = UserRole.SystemAdministrator, OrganizationId = subCity.Id, DepartmentId = adminDept.Id, IsActive = true },
+                    new User { FullName = "Sub-City Supervisor", Username = "subadmin", Email = "subadmin@subcity.gov.et", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Sub@123"), Role = UserRole.SubCityAdministrator, OrganizationId = subCity.Id, DepartmentId = adminDept.Id, IsActive = true },
+                    new User { FullName = "Certificate Clerk", Username = "clerk", Email = "clerk@subcity.gov.et", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Clerk@123"), Role = UserRole.Clerk, OrganizationId = subCity.Id, DepartmentId = certDept.Id, IsActive = true },
+                    new User { FullName = "Police Verification Officer", Username = "police1", Email = "police1@subcity.gov.et", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Police@123"), Role = UserRole.PoliceAdministrator, OrganizationId = police.Id, DepartmentId = vruDept.Id, IsActive = true },
+                    new User { FullName = "Police Investigation Officer", Username = "police2", Email = "police2@subcity.gov.et", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Police@123"), Role = UserRole.PoliceAdministrator, OrganizationId = police.Id, DepartmentId = invDept.Id, IsActive = true }
                 );
                 await context.SaveChangesAsync();
             }
 
-            // Seed Citizen test account
             if (!await context.Citizens.AnyAsync())
             {
-                context.Citizens.AddRange(
-                    new Citizen
-                    {
-                        FullName = "Test Citizen",
-                        PhoneNumber = "0911111111",
-                        PasswordHash = BCrypt.Net.BCrypt.HashPassword("Test@123"),
-                        IsVerified = true,
-                        IsActive = true
-                    }
-                );
+                context.Citizens.Add(new Citizen { FullName = "Test Citizen", PhoneNumber = "0911111111", PasswordHash = BCrypt.Net.BCrypt.HashPassword("Test@123"), IsVerified = true, IsActive = true });
                 await context.SaveChangesAsync();
             }
 
-            // Seed Service Categories
             if (!await context.ServiceCategories.AnyAsync())
             {
                 context.ServiceCategories.AddRange(
-                    new ServiceCategory { Name = "Civil Documents", Description = "Birth certificates, marriage certificates, family records", Icon = "file-text", DisplayOrder = 1, IsActive = true },
-                    new ServiceCategory { Name = "Business Services", Description = "Business licenses, trade permits, commercial registrations", Icon = "briefcase", DisplayOrder = 2, IsActive = true },
-                    new ServiceCategory { Name = "Land & Property", Description = "Land ownership, property registration, building permits", Icon = "map-pin", DisplayOrder = 3, IsActive = true },
-                    new ServiceCategory { Name = "Police Services", Description = "Background checks, police clearance, lost property reports", Icon = "shield", DisplayOrder = 4, IsActive = true },
-                    new ServiceCategory { Name = "Social Services", Description = "Social assistance, pension, disability support", Icon = "heart", DisplayOrder = 5, IsActive = true }
+                    new ServiceCategory { Name = "Civil Registration", Description = "Birth, marriage, divorce, death, adoption certificates", Icon = "file-text", DisplayOrder = 1, IsActive = true },
+                    new ServiceCategory { Name = "Residency Services", Description = "Resident ID, verification, release letters", Icon = "home", DisplayOrder = 2, IsActive = true },
+                    new ServiceCategory { Name = "Special Certificates", Description = "Non-marital, paternity recognition, childhood acceptance", Icon = "shield", DisplayOrder = 3, IsActive = true }
                 );
                 await context.SaveChangesAsync();
             }
 
-            // Seed Service Types
             if (!await context.ServiceTypes.AnyAsync())
             {
-                var civil = await context.ServiceCategories.FirstAsync(c => c.Name == "Civil Documents");
-                var business = await context.ServiceCategories.FirstAsync(c => c.Name == "Business Services");
-                var land = await context.ServiceCategories.FirstAsync(c => c.Name == "Land & Property");
-                var police = await context.ServiceCategories.FirstAsync(c => c.Name == "Police Services");
-                var social = await context.ServiceCategories.FirstAsync(c => c.Name == "Social Services");
+                var civil = await context.ServiceCategories.FirstAsync(c => c.Name == "Civil Registration");
+                var residency = await context.ServiceCategories.FirstAsync(c => c.Name == "Residency Services");
+                var special = await context.ServiceCategories.FirstAsync(c => c.Name == "Special Certificates");
+
+                var reminder = "The residence ID will not be given by proxy and will not be renewed. Ethiopians diasporas and foreign nationals living abroad are not issued residence ID. Resident ID will not be issued at any business house. Any resident who has been given a residence ID will be issued a new ID after the expiration of the period of service.";
 
                 context.ServiceTypes.AddRange(
-                    new ServiceType { Name = "Birth Certificate", Description = "Official birth certificate issuance", CategoryId = civil.Id, Code = "BC", EstimatedDays = 3, Fee = 50, RequiresPoliceVerification = false, RequiredDocuments = "[\"National ID of parent\",\"Hospital birth record\"]", IsActive = true },
-                    new ServiceType { Name = "Marriage Certificate", Description = "Official marriage certificate issuance", CategoryId = civil.Id, Code = "MC", EstimatedDays = 3, Fee = 75, RequiresPoliceVerification = false, RequiredDocuments = "[\"National IDs of both spouses\",\"Marriage invitation letter\"]", IsActive = true },
-                    new ServiceType { Name = "Business License", Description = "New business license application", CategoryId = business.Id, Code = "BL", EstimatedDays = 7, Fee = 500, RequiresPoliceVerification = true, RequiredDocuments = "[\"National ID\",\"Business plan\",\"Tax registration\"]", IsActive = true },
-                    new ServiceType { Name = "Trade Permit", Description = "Trade and commerce permit", CategoryId = business.Id, Code = "TP", EstimatedDays = 5, Fee = 200, RequiresPoliceVerification = false, RequiredDocuments = "[\"National ID\",\"Business registration\"]", IsActive = true },
-                    new ServiceType { Name = "Land Ownership Certificate", Description = "Certificate of land ownership", CategoryId = land.Id, Code = "LOC", EstimatedDays = 14, Fee = 1000, RequiresPoliceVerification = true, RequiredDocuments = "[\"National ID\",\"Land survey document\",\"Tax clearance\"]", IsActive = true },
-                    new ServiceType { Name = "Building Permit", Description = "Construction building permit", CategoryId = land.Id, Code = "BP", EstimatedDays = 10, Fee = 750, RequiresPoliceVerification = false, RequiredDocuments = "[\"National ID\",\"Architectural plans\",\"Land ownership proof\"]", IsActive = true },
-                    new ServiceType { Name = "Police Clearance Certificate", Description = "Certificate of good conduct", CategoryId = police.Id, Code = "PCC", EstimatedDays = 5, Fee = 100, RequiresPoliceVerification = false, RequiredDocuments = "[\"National ID\",\"Passport photos\",\"Criminal record check\"]", IsActive = true },
-                    new ServiceType { Name = "Background Check", Description = "Employment background verification", CategoryId = police.Id, Code = "BG", EstimatedDays = 7, Fee = 150, RequiresPoliceVerification = false, RequiredDocuments = "[\"National ID\",\"Employment letter\"]", IsActive = true },
-                    new ServiceType { Name = "Social Assistance Application", Description = "Application for social welfare support", CategoryId = social.Id, Code = "SA", EstimatedDays = 14, Fee = 0, RequiresPoliceVerification = false, RequiredDocuments = "[\"National ID\",\"Income certificate\",\"Family records\"]", IsActive = true },
-                    new ServiceType { Name = "Disability Support Registration", Description = "Registration for disability benefits", CategoryId = social.Id, Code = "DS", EstimatedDays = 10, Fee = 0, RequiresPoliceVerification = false, RequiredDocuments = "[\"National ID\",\"Medical certificate\",\"Disability assessment\"]", IsActive = true },
-                    new ServiceType { Name = "Family Record Certificate", Description = "Official family record document", CategoryId = civil.Id, Code = "FR", EstimatedDays = 3, Fee = 40, RequiresPoliceVerification = false, RequiredDocuments = "[\"National ID\",\"Family member IDs\"]", IsActive = true },
-                    new ServiceType { Name = "Lost Property Report", Description = "File a lost property report", CategoryId = police.Id, Code = "LP", EstimatedDays = 1, Fee = 25, RequiresPoliceVerification = false, RequiredDocuments = "[\"National ID\",\"Property description\"]", IsActive = true }
+                    // 1. Birth Registration
+                    new ServiceType
+                    {
+                        Name = "Birth Registration and Certificate", Code = "BRC", CategoryId = civil.Id,
+                        Description = "Registration and certification of birth for children born in Ethiopia",
+                        EstimatedDays = 3, Fee = 50, RequiresPoliceVerification = false,
+                        ServiceProvider = "Civil Registration and Residency Services Agency branch office of woreda",
+                        EligibilityCriteria = "If the parents of the child are both alive or unable to register the birth due to force majeure, they can register by giving a special birth proxy to the biological mother, and if the biological mother is unable, by giving a special birth proxy to the biological father. If one of the parents is not alive, the birth is registered when the living parent presents the legal death certificate of the deceased parent. Persons with disabilities can register through their caregivers or guardians. A birth is registered for a live birth or a live birth followed by immediate death, but a stillbirth is not registered. A birth registration service seeker who is 18 years of age or older must register their birth themselves. When parents who have a child before the age of 18 come to register, they can register by submitting a letter of support from the lower administration office. If the registrant is a foreigner, he must have been born in Ethiopia.",
+                        SupportingEvidence = "If the birth occurred at a health facility, the registrant must submit a birth notification form from the health facility. When the guardian comes to register the birth, they must provide a legal proof of guardianship issued by the court. The police or appropriate government agency that comes to register an abandoned child must provide legal identification or proof of identity. If the birth registrant is a foreign citizen, proof from a health institution must be submitted.",
+                        RequiredDocuments = "[\"Birth notification form from health facility\",\"Legal proof of guardianship (if applicable)\",\"Court order for abandoned children\",\"Health institution proof (foreign citizens)\"]",
+                        IsActive = true
+                    },
+                    // 2. Marriage Registration
+                    new ServiceType
+                    {
+                        Name = "Marriage Registration and Certificate", Code = "MRC", CategoryId = civil.Id,
+                        Description = "Registration and certification of marriage for couples",
+                        EstimatedDays = 5, Fee = 75, RequiresPoliceVerification = false,
+                        ServiceProvider = "Civil Registration and Residency Services Agency branch office of woreda",
+                        EligibilityCriteria = "If the couple decides to get married too late, they must notify the registrar one month before the date. The registrar will issue a notice for 15 consecutive days stating the date of the marriage. Objection to marriage must be submitted in writing within 15 consecutive days from the date of posting of notice; it must be parents and guardians, prosecutors, guardians or a person who claims to have a previous marriage who can file an objection. The registrar must give a decision on the marriage objection submitted within five consecutive days. Neither a man nor a woman can get married before they reach 18 years of age.",
+                        SupportingEvidence = "Spouses must present an unexpired residence or national ID or passport or defense army ID or proof of immigration or residence permit or proof of residency issued by the lowest administrative office. If the marriage is performed at the place of normal residence of the spouse's parents or close relatives, the residence/national ID of the parents or close relatives must be submitted. Proof of residence/nationality or passport of spouse witnesses must be provided. If the bridegroom is previously married and divorced, a divorce certificate should be provided if available. Two 3x4 photographs of the couple taken at the same time within 6 months must be submitted. Witnesses of married couples who have been married in a religious and traditional ceremony must appear in person before the registrar and sign their signatures. Birth certificates of spouses, if available, must be submitted.",
+                        RequiredDocuments = "[\"Unexpired residence/national ID or passport\",\"2 photos (3x4, within 6 months)\",\"Divorce certificate (if applicable)\",\"Birth certificates of spouses (if available)\",\"Witness identification documents\"]",
+                        IsActive = true
+                    },
+                    // 3. Divorce Registration
+                    new ServiceType
+                    {
+                        Name = "Divorce Registration Certificate", Code = "DVC", CategoryId = civil.Id,
+                        Description = "Registration and certification of divorce",
+                        EstimatedDays = 3, Fee = 50, RequiresPoliceVerification = false,
+                        ServiceProvider = "Civil Registration and Residency Services Agency branch office of woreda",
+                        EligibilityCriteria = "The applicant's renewed ID or passport and visa or residence permit must be submitted. When it is a renewal service, the old certificate must be submitted. If the court's divorce decree is not filed before, the original and the copy must be submitted. If it is an embassy confirmation, a letter from the embassy explaining the matter and the representative of the embassy must provide a renewed ID or passport. If the request is through a representative, specific legal representation evidence must be provided. For correction requests, a court order must be submitted.",
+                        SupportingEvidence = "Renewed ID or passport and visa or residence permit. Old certificate (for renewal). Original and copy of court divorce decree. Embassy letter (for embassy confirmation). Legal representation documents (if through representative). Court order (for corrections).",
+                        RequiredDocuments = "[\"Renewed ID or passport\",\"Court divorce decree (original and copy)\",\"Old certificate (for renewal)\",\"Embassy letter (if applicable)\",\"Court order (for corrections)\"]",
+                        IsActive = true
+                    },
+                    // 4. Death Registration
+                    new ServiceType
+                    {
+                        Name = "Death Registration and Certificate", Code = "DRC", CategoryId = civil.Id,
+                        Description = "Registration and certification of death",
+                        EstimatedDays = 2, Fee = 30, RequiresPoliceVerification = false,
+                        ServiceProvider = "Civil Registration and Residency Services Agency branch office of woreda",
+                        EligibilityCriteria = "The person who lived with the deceased, the relatives of the deceased by blood or marriage if there is no cohabiting person, the nearest neighbor if these are not available, or anyone who knows about the death of the deceased must register the death. If the death occurred in a shared residence, the head of the institution must be approached. The death will be registered when the evidence provided by the body that investigates whether the person who died due to the accident and the person who was with the accident victim could be found. If the death is recorded as a result of a decision of disappearance of the person, an exact copy of the court decision must be submitted. In case of a death registered after the deadline, certified written evidence of the occurrence of the death must be submitted from the church, mosque, etc.",
+                        SupportingEvidence = "Court decision for disappearance cases. Certified written evidence from church/mosque for late registration. Evidence from investigating body for accident cases. Identification of person reporting the death.",
+                        RequiredDocuments = "[\"Identification of reporter\",\"Court decision (disappearance cases)\",\"Church/mosque certificate (late registration)\",\"Investigating body evidence (accident cases)\"]",
+                        IsActive = true
+                    },
+                    // 5. Adoption Registration
+                    new ServiceType
+                    {
+                        Name = "Adoption Registration Certificate", Code = "ADC", CategoryId = civil.Id,
+                        Description = "Registration and certification of adoption",
+                        EstimatedDays = 7, Fee = 100, RequiresPoliceVerification = true,
+                        ServiceProvider = "Civil Registration and Residency Services Agency branch office of woreda",
+                        EligibilityCriteria = "Applicant's renewed Resident ID or passport must be submitted. If it is a renewal service, the previous certificate must be returned. If it is an embassy confirmation, a letter from the embassy explaining the matter and the representative must provide a renewed Resident ID or passport. If the request is made by representative, specific legal proof of representation must be provided. For correction requests, a court decision must be submitted.",
+                        SupportingEvidence = "Renewed Resident ID or passport. Previous certificate (for renewal). Embassy letter (for embassy confirmation). Legal representation documents (if through representative). Court decision (for corrections).",
+                        RequiredDocuments = "[\"Renewed ID or passport\",\"Previous certificate (for renewal)\",\"Embassy letter (if applicable)\",\"Legal representation documents\",\"Court order (for corrections)\"]",
+                        IsActive = true
+                    },
+                    // 6. Childhood Acceptance
+                    new ServiceType
+                    {
+                        Name = "Childhood Acceptance Certificate", Code = "CAC", CategoryId = special.Id,
+                        Description = "Registration and certificate of acceptance of childhood by the father",
+                        EstimatedDays = 30, Fee = 50, RequiresPoliceVerification = false,
+                        ServiceProvider = "Civil Registration and Residency Services Agency branch office of woreda",
+                        EligibilityCriteria = "The father must come before the Honorary Registrar and give his word that he is my son. When a court-approved will is submitted and one of the father's parents accepts the child on behalf of the biological father, and the child's mother acknowledges the recipient's paternity, it is registered. If the child has reached the age of majority, the father's acceptance of the child is recorded. Although the biological father is a minor, only the father can promise that he is the child. If he gives his word through an agent, a special power of attorney approved by the court must be submitted. The registrar should not register unless the child's mother believes that the recipient's paternity is genuine. The registrar shall post a notice for a period of 30 consecutive days. When the child's father is dead or unable to give his consent, one of the father's parents can give his word. If the child's mother is dead or found to be incapacitated, the affidavit may be given by one of the child's mother's parents.",
+                        SupportingEvidence = "Court-approved will (if applicable). Special power of attorney (if through agent). Statement or written will certified by authorized authority.",
+                        RequiredDocuments = "[\"Court-approved will (if applicable)\",\"Special power of attorney (if through agent)\",\"Statement certified by authorized authority\"]",
+                        IsActive = true
+                    },
+                    // 7. Paternity Recognition
+                    new ServiceType
+                    {
+                        Name = "Paternity Recognition Certificate", Code = "PRC", CategoryId = special.Id,
+                        Description = "Recognition of paternity in court registration and certificate",
+                        EstimatedDays = 7, Fee = 50, RequiresPoliceVerification = false,
+                        ServiceProvider = "Civil Registration and Residency Services Agency branch office of woreda",
+                        EligibilityCriteria = "If the child's birth has been registered, the previously registered information regarding the child's biological father and grandfather will be recorded based on the court's decision to determine paternity (Unknown father reign). If the child's birth has not already been registered in the register of honor, the birth will be registered according to the birth registration instructions.",
+                        SupportingEvidence = "Resident/national ID or passport of the registrant. Court order determining paternity.",
+                        RequiredDocuments = "[\"Resident/national ID or passport\",\"Court order for paternity determination\"]",
+                        IsActive = true
+                    },
+                    // 8. Residence ID
+                    new ServiceType
+                    {
+                        Name = "Residence ID", Code = "RID", CategoryId = residency.Id,
+                        Description = "Issuance of Addis Ababa City Resident ID card",
+                        EstimatedDays = 3, Fee = 25, RequiresPoliceVerification = false,
+                        ServiceProvider = "Civil Registration and Residency Services Agency branch office of woreda",
+                        EligibilityCriteria = "Must be registered in Residence Registration Form 001. Age must be 18 years and above. Must appear in person or apply through the technology option provided by the agency. An Ethiopian who is 18 years of age and older and registered as a resident in the district where he lives has the right to ask for an identity card. ID is not delegated; it will not be renewed. A resident who resigns from his previous residence has the right to request an ID when he registers as a resident after the resignation has been registered for 3 months. Renewal: valid for up to four years. Replacement available for torn, burned, damaged or lost IDs.",
+                        SupportingEvidence = "2 photographs taken in the last 6 months. Service request form. Proof from Housing Development Office or tax office (if commercial and residential house are together). Police proof of loss (for lost ID).",
+                        RequiredDocuments = "[\"2 photographs (within 6 months)\",\"Service request form\",\"Police proof of loss (if lost)\",\"Housing Development Office proof (if needed)\"]",
+                        Reminder = "The residence ID will not be given by proxy and will not be renewed. Ethiopians diasporas and foreign nationals living abroad are not issued residence ID. Resident ID will not be issued at any business house.",
+                        IsActive = true
+                    },
+                    // 9. Non-marital Certificate
+                    new ServiceType
+                    {
+                        Name = "Non-marital Certificate", Code = "NMC", CategoryId = special.Id,
+                        Description = "Certificate confirming single/unmarried status",
+                        EstimatedDays = 2, Fee = 20, RequiresPoliceVerification = false,
+                        ServiceProvider = "Civil Registration and Residency Services Agency branch office of woreda",
+                        EligibilityCriteria = "Confirmation from the residential registration form that they are not married and take an affidavit. Two passport size photographs taken within six months must be submitted. Resident ID or passport containing updated complete details of the applicant. If the request is made by an agent, special representation shall be made. The only certificate issued by the district office will be valid for 6 months only. In the event of divorce or the death or disappearance of their spouse, when they seek a certificate of single status, they will be issued a single status certificate. After marriage, if they ask for proof of marriage before marriage, they will receive daily, monthly and annual service until the date of marriage.",
+                        SupportingEvidence = "Affidavit confirming unmarried status. Two passport size photographs (within 6 months). Resident ID or passport with updated details. Agent's representation documents (if applicable).",
+                        RequiredDocuments = "[\"Affidavit of unmarried status\",\"2 passport photos (within 6 months)\",\"Updated Resident ID or passport\"]",
+                        IsActive = true
+                    },
+                    // 10. Residency Verification
+                    new ServiceType
+                    {
+                        Name = "Residency Verification Service", Code = "RVS", CategoryId = residency.Id,
+                        Description = "Verification of residency status and duration",
+                        EstimatedDays = 1, Fee = 10, RequiresPoliceVerification = false,
+                        ServiceProvider = "Civil Registration and Residency Services Agency branch office of woreda",
+                        EligibilityCriteria = "Must be registered on the family form. Applicant must provide renewed resident ID. If he/she asks for proof of how long he/she has lived in the woreda, it must be recorded on a clear resident form. It must also be confirmed on oath. When requested by a representative, a letter of proof of residency will be processed by providing a legal representative document, and providing a copy of the representative's renewed ID or passport.",
+                        SupportingEvidence = "Renewed resident ID. Family form registration record. Legal representative document (if through representative). Representative's renewed ID or passport copy.",
+                        RequiredDocuments = "[\"Renewed resident ID\",\"Family form registration record\",\"Legal representative document (if applicable)\"]",
+                        IsActive = true
+                    },
+                    // 11. Resident Release Letter
+                    new ServiceType
+                    {
+                        Name = "Resident Release Letter Service", Code = "RLL", CategoryId = residency.Id,
+                        Description = "Release letter for residents transferring to another district",
+                        EstimatedDays = 2, Fee = 10, RequiresPoliceVerification = false,
+                        ServiceProvider = "Civil Registration and Residency Services Agency branch office of woreda",
+                        EligibilityCriteria = "Must be registered on the family form. The requesting customer must be presented in person. When picking up the item, you must return the residence ID you have been using earlier. If the person lives in a government house and is responsible for the house, he must provide proof of the handover of the government house. He/she must submit 4x4 size photograph taken within six months. If the transfer letter is given to more than one person, those over 18 years of age must submit a 4x4 size photograph. If he/she says that he/she has lost his/her Residence ID, he/she can get a replacement by providing proof of its loss from the police or photographic proof of identity and verifying it with an oath. The transfer can be handled by proxy only when the representative has clearly represented the transfer.",
+                        SupportingEvidence = "Previous residence ID (must be returned). Government house handover proof (if applicable). 4x4 photograph (within 6 months). Police proof of loss (if ID lost). Legal representation documents (if through agent).",
+                        RequiredDocuments = "[\"Previous residence ID (to be returned)\",\"4x4 photograph (within 6 months)\",\"Government house handover proof (if applicable)\",\"Police proof of loss (if ID lost)\"]",
+                        IsActive = true
+                    },
+                    // 12. Foreign Service Letters
+                    new ServiceType
+                    {
+                        Name = "Residence Service Letters to Foreign Countries", Code = "FSC", CategoryId = residency.Id,
+                        Description = "Residence service letters written to foreign countries and the Minister of Foreign Affairs and Immigration",
+                        EstimatedDays = 5, Fee = 30, RequiresPoliceVerification = false,
+                        ServiceProvider = "Civil Registration and Residency Services Agency headquarters and its branches",
+                        EligibilityCriteria = "A letter written to the Agency from the Woreda where you live. Renewed ID. If the service is provided through representation, representation document and representative's renewed ID and passport and travel document or immigrant ID.",
+                        SupportingEvidence = "Letter from Woreda office. Renewed ID. Representative's documents (if applicable): representation document, renewed ID, passport, travel document or immigrant ID.",
+                        RequiredDocuments = "[\"Letter from Woreda office\",\"Renewed ID\",\"Representation document (if applicable)\",\"Representative's ID and passport (if applicable)\"]",
+                        IsActive = true
+                    }
                 );
                 await context.SaveChangesAsync();
             }
 
-            // Seed Workflow Definitions
             if (!await context.WorkflowDefinitions.AnyAsync())
             {
-                var bcType = await context.ServiceTypes.FirstAsync(s => s.Code == "BC");
-                var blType = await context.ServiceTypes.FirstAsync(s => s.Code == "BL");
-                var locType = await context.ServiceTypes.FirstAsync(s => s.Code == "LOC");
+                var brcType = await context.ServiceTypes.FirstAsync(s => s.Code == "BRC");
+                var mrcType = await context.ServiceTypes.FirstAsync(s => s.Code == "MRC");
+                var ridType = await context.ServiceTypes.FirstAsync(s => s.Code == "RID");
 
                 context.WorkflowDefinitions.AddRange(
-                    new WorkflowDefinition { Name = "Standard Service Workflow", Description = "Default 8-step workflow for citizen services", ServiceTypeId = bcType.Id, IsActive = true },
-                    new WorkflowDefinition { Name = "Police Required Workflow", Description = "Workflow with police verification for sensitive services", ServiceTypeId = blType.Id, IsActive = true },
-                    new WorkflowDefinition { Name = "Fast Track Workflow", Description = "Simplified workflow for simple document requests", ServiceTypeId = locType.Id, IsActive = true }
+                    new WorkflowDefinition { Name = "Birth Registration Workflow", Description = "Birth certificate registration and issuance", ServiceTypeId = brcType.Id, IsActive = true },
+                    new WorkflowDefinition { Name = "Marriage Registration Workflow", Description = "Marriage certificate registration and issuance", ServiceTypeId = mrcType.Id, IsActive = true },
+                    new WorkflowDefinition { Name = "Standard Service Workflow", Description = "Standard workflow for residency and other services", ServiceTypeId = ridType.Id, IsActive = true }
                 );
                 await context.SaveChangesAsync();
             }
 
-            // Seed Workflow Steps
             if (!await context.WorkflowSteps.AnyAsync())
             {
-                var wf1 = await context.WorkflowDefinitions.FirstAsync(w => w.Name == "Standard Service Workflow");
-                var wf2 = await context.WorkflowDefinitions.FirstAsync(w => w.Name == "Police Required Workflow");
-                var wf3 = await context.WorkflowDefinitions.FirstAsync(w => w.Name == "Fast Track Workflow");
+                var wfBirth = await context.WorkflowDefinitions.FirstAsync(w => w.Name == "Birth Registration Workflow");
+                var wfMarriage = await context.WorkflowDefinitions.FirstAsync(w => w.Name == "Marriage Registration Workflow");
+                var wfStandard = await context.WorkflowDefinitions.FirstAsync(w => w.Name == "Standard Service Workflow");
 
-                // Standard workflow (8 steps)
+                // Birth Registration: simple 4-step (no police needed)
                 context.WorkflowSteps.AddRange(
-                    new WorkflowStep { Name = "Application", Description = "Citizen submits application with required documents", StepOrder = 1, StepType = WorkflowStepType.Submission, IsAutoStep = false, SLAHours = 1, WorkflowDefinitionId = wf1.Id },
-                    new WorkflowStep { Name = "Verification", Description = "Clerk verifies submitted documents and application details", StepOrder = 2, StepType = WorkflowStepType.Verification, AssignedRole = "Clerk", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wf1.Id },
-                    new WorkflowStep { Name = "Document Validation", Description = "Validate authenticity and completeness of documents", StepOrder = 3, StepType = WorkflowStepType.DocumentValidation, AssignedRole = "DepartmentOfficer", IsAutoStep = false, SLAHours = 48, WorkflowDefinitionId = wf1.Id },
-                    new WorkflowStep { Name = "Supervisor Review", Description = "Department head reviews and endorses application", StepOrder = 4, StepType = WorkflowStepType.SupervisorReview, AssignedRole = "SubCityAdministrator", IsAutoStep = false, SLAHours = 48, WorkflowDefinitionId = wf1.Id },
-                    new WorkflowStep { Name = "Approval", Description = "Final approval by sub-city administrator", StepOrder = 5, StepType = WorkflowStepType.Approval, AssignedRole = "SubCityAdministrator", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wf1.Id },
-                    new WorkflowStep { Name = "Document Generation", Description = "System generates the official document", StepOrder = 6, StepType = WorkflowStepType.DocumentGeneration, IsAutoStep = true, SLAHours = 1, WorkflowDefinitionId = wf1.Id },
-                    new WorkflowStep { Name = "Citizen Notification", Description = "Citizen is notified that document is ready for pickup", StepOrder = 7, StepType = WorkflowStepType.Notification, IsAutoStep = true, SLAHours = 1, WorkflowDefinitionId = wf1.Id },
-                    new WorkflowStep { Name = "Completed", Description = "Application process completed", StepOrder = 8, StepType = WorkflowStepType.Approval, IsAutoStep = true, SLAHours = 1, WorkflowDefinitionId = wf1.Id }
+                    new WorkflowStep { Name = "Application", Description = "Citizen submits birth registration application", StepOrder = 1, StepType = WorkflowStepType.Submission, IsAutoStep = false, SLAHours = 1, WorkflowDefinitionId = wfBirth.Id },
+                    new WorkflowStep { Name = "Document Review", Description = "Clerk reviews documents and birth notification", StepOrder = 2, StepType = WorkflowStepType.Verification, AssignedRole = "Clerk", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wfBirth.Id },
+                    new WorkflowStep { Name = "Approval", Description = "Supervisor approves the registration", StepOrder = 3, StepType = WorkflowStepType.Approval, AssignedRole = "SubCityAdministrator", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wfBirth.Id },
+                    new WorkflowStep { Name = "Certificate Issued", Description = "Certificate is generated and citizen notified", StepOrder = 4, StepType = WorkflowStepType.DocumentGeneration, IsAutoStep = true, SLAHours = 1, WorkflowDefinitionId = wfBirth.Id }
                 );
 
-                // Police required workflow (8 steps)
+                // Marriage Registration: 5-step with verification
                 context.WorkflowSteps.AddRange(
-                    new WorkflowStep { Name = "Application", Description = "Citizen submits application", StepOrder = 1, StepType = WorkflowStepType.Submission, IsAutoStep = false, SLAHours = 1, WorkflowDefinitionId = wf2.Id },
-                    new WorkflowStep { Name = "Verification", Description = "Clerk verifies documents", StepOrder = 2, StepType = WorkflowStepType.Verification, AssignedRole = "Clerk", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wf2.Id },
-                    new WorkflowStep { Name = "Document Validation", Description = "Validate documents", StepOrder = 3, StepType = WorkflowStepType.DocumentValidation, AssignedRole = "DepartmentOfficer", IsAutoStep = false, SLAHours = 48, WorkflowDefinitionId = wf2.Id },
-                    new WorkflowStep { Name = "Police Verification", Description = "Police background check and investigation", StepOrder = 4, StepType = WorkflowStepType.PoliceVerification, AssignedRole = "PoliceAdministrator", IsAutoStep = false, SLAHours = 120, WorkflowDefinitionId = wf2.Id },
-                    new WorkflowStep { Name = "Supervisor Review", Description = "Department head reviews", StepOrder = 5, StepType = WorkflowStepType.SupervisorReview, AssignedRole = "SubCityAdministrator", IsAutoStep = false, SLAHours = 48, WorkflowDefinitionId = wf2.Id },
-                    new WorkflowStep { Name = "Approval", Description = "Final approval", StepOrder = 6, StepType = WorkflowStepType.Approval, AssignedRole = "SubCityAdministrator", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wf2.Id },
-                    new WorkflowStep { Name = "Document Generation", Description = "Generate official document", StepOrder = 7, StepType = WorkflowStepType.DocumentGeneration, IsAutoStep = true, SLAHours = 1, WorkflowDefinitionId = wf2.Id },
-                    new WorkflowStep { Name = "Citizen Notification", Description = "Notify citizen", StepOrder = 8, StepType = WorkflowStepType.Notification, IsAutoStep = true, SLAHours = 1, WorkflowDefinitionId = wf2.Id }
+                    new WorkflowStep { Name = "Application", Description = "Couple submits marriage registration", StepOrder = 1, StepType = WorkflowStepType.Submission, IsAutoStep = false, SLAHours = 1, WorkflowDefinitionId = wfMarriage.Id },
+                    new WorkflowStep { Name = "Document Review", Description = "Clerk reviews IDs and required documents", StepOrder = 2, StepType = WorkflowStepType.Verification, AssignedRole = "Clerk", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wfMarriage.Id },
+                    new WorkflowStep { Name = "15-Day Notice Period", Description = "Public notice posted for 15 consecutive days", StepOrder = 3, StepType = WorkflowStepType.DocumentValidation, IsAutoStep = true, SLAHours = 360, WorkflowDefinitionId = wfMarriage.Id },
+                    new WorkflowStep { Name = "Approval", Description = "Registrar approves the marriage registration", StepOrder = 4, StepType = WorkflowStepType.Approval, AssignedRole = "SubCityAdministrator", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wfMarriage.Id },
+                    new WorkflowStep { Name = "Certificate Issued", Description = "Marriage certificate is generated", StepOrder = 5, StepType = WorkflowStepType.DocumentGeneration, IsAutoStep = true, SLAHours = 1, WorkflowDefinitionId = wfMarriage.Id }
                 );
 
-                // Fast track workflow (5 steps)
+                // Standard: 4-step
                 context.WorkflowSteps.AddRange(
-                    new WorkflowStep { Name = "Application", Description = "Citizen submits", StepOrder = 1, StepType = WorkflowStepType.Submission, IsAutoStep = false, SLAHours = 1, WorkflowDefinitionId = wf3.Id },
-                    new WorkflowStep { Name = "Verification", Description = "Clerk verifies", StepOrder = 2, StepType = WorkflowStepType.Verification, AssignedRole = "Clerk", IsAutoStep = false, SLAHours = 12, WorkflowDefinitionId = wf3.Id },
-                    new WorkflowStep { Name = "Approval", Description = "Quick approval", StepOrder = 3, StepType = WorkflowStepType.Approval, AssignedRole = "SubCityAdministrator", IsAutoStep = false, SLAHours = 12, WorkflowDefinitionId = wf3.Id },
-                    new WorkflowStep { Name = "Document Generation", Description = "Generate document", StepOrder = 4, StepType = WorkflowStepType.DocumentGeneration, IsAutoStep = true, SLAHours = 1, WorkflowDefinitionId = wf3.Id },
-                    new WorkflowStep { Name = "Citizen Notification", Description = "Notify citizen", StepOrder = 5, StepType = WorkflowStepType.Notification, IsAutoStep = true, SLAHours = 1, WorkflowDefinitionId = wf3.Id }
+                    new WorkflowStep { Name = "Application", Description = "Citizen submits application", StepOrder = 1, StepType = WorkflowStepType.Submission, IsAutoStep = false, SLAHours = 1, WorkflowDefinitionId = wfStandard.Id },
+                    new WorkflowStep { Name = "Document Review", Description = "Clerk reviews documents", StepOrder = 2, StepType = WorkflowStepType.Verification, AssignedRole = "Clerk", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wfStandard.Id },
+                    new WorkflowStep { Name = "Approval", Description = "Supervisor approval", StepOrder = 3, StepType = WorkflowStepType.Approval, AssignedRole = "SubCityAdministrator", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wfStandard.Id },
+                    new WorkflowStep { Name = "Service Completed", Description = "Document issued and citizen notified", StepOrder = 4, StepType = WorkflowStepType.DocumentGeneration, IsAutoStep = true, SLAHours = 1, WorkflowDefinitionId = wfStandard.Id }
                 );
 
                 await context.SaveChangesAsync();

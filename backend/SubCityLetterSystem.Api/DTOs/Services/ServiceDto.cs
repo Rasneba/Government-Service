@@ -23,6 +23,10 @@ namespace SubCityLetterSystem.Api.DTOs.Services
         public decimal Fee { get; set; }
         public bool RequiresPoliceVerification { get; set; }
         public string? RequiredDocuments { get; set; }
+        public string? EligibilityCriteria { get; set; }
+        public string? SupportingEvidence { get; set; }
+        public string? Reminder { get; set; }
+        public string? ServiceProvider { get; set; }
         public bool IsActive { get; set; }
         public int ApplicationCount { get; set; }
         public List<WorkflowStepConfigDto> WorkflowSteps { get; set; } = new();

@@ -35,6 +35,10 @@ namespace SubCityLetterSystem.Api.Services
                 EstimatedDays = s.EstimatedDays, Fee = s.Fee,
                 RequiresPoliceVerification = s.RequiresPoliceVerification,
                 RequiredDocuments = s.RequiredDocuments, IsActive = s.IsActive,
+                EligibilityCriteria = s.EligibilityCriteria,
+                SupportingEvidence = s.SupportingEvidence,
+                Reminder = s.Reminder,
+                ServiceProvider = s.ServiceProvider,
                 ApplicationCount = s.Applications.Count()
             }).ToListAsync();
         }
@@ -52,6 +56,10 @@ namespace SubCityLetterSystem.Api.Services
                     EstimatedDays = s.EstimatedDays, Fee = s.Fee,
                     RequiresPoliceVerification = s.RequiresPoliceVerification,
                     RequiredDocuments = s.RequiredDocuments, IsActive = s.IsActive,
+                    EligibilityCriteria = s.EligibilityCriteria,
+                    SupportingEvidence = s.SupportingEvidence,
+                    Reminder = s.Reminder,
+                    ServiceProvider = s.ServiceProvider,
                     ApplicationCount = s.Applications.Count(),
                     WorkflowSteps = s.WorkflowDefinitions.SelectMany(w => w.Steps).OrderBy(st => st.StepOrder).Select(st => new WorkflowStepConfigDto
                     {
@@ -69,7 +77,11 @@ namespace SubCityLetterSystem.Api.Services
                 Name = dto.Name, Description = dto.Description, CategoryId = dto.CategoryId,
                 Code = dto.Code, EstimatedDays = dto.EstimatedDays, Fee = dto.Fee,
                 RequiresPoliceVerification = dto.RequiresPoliceVerification,
-                RequiredDocuments = dto.RequiredDocuments, IsActive = dto.IsActive
+                RequiredDocuments = dto.RequiredDocuments, IsActive = dto.IsActive,
+                EligibilityCriteria = dto.EligibilityCriteria,
+                SupportingEvidence = dto.SupportingEvidence,
+                Reminder = dto.Reminder,
+                ServiceProvider = dto.ServiceProvider
             };
             _context.ServiceTypes.Add(entity);
             await _context.SaveChangesAsync();
@@ -85,6 +97,10 @@ namespace SubCityLetterSystem.Api.Services
             entity.EstimatedDays = dto.EstimatedDays; entity.Fee = dto.Fee;
             entity.RequiresPoliceVerification = dto.RequiresPoliceVerification;
             entity.RequiredDocuments = dto.RequiredDocuments; entity.IsActive = dto.IsActive;
+            entity.EligibilityCriteria = dto.EligibilityCriteria;
+            entity.SupportingEvidence = dto.SupportingEvidence;
+            entity.Reminder = dto.Reminder;
+            entity.ServiceProvider = dto.ServiceProvider;
             entity.UpdatedAt = DateTime.UtcNow;
             await _context.SaveChangesAsync();
             dto.Id = id;

@@ -29,10 +29,23 @@ namespace SubCityLetterSystem.Api.Models.Entities
         public DateTime? CompletedAt { get; set; }
         public bool IsDeleted { get; set; } = false;
 
+        [MaxLength(100)]
+        public string? OriginalCertificateNumber { get; set; }
+        [MaxLength(50)]
+        public string? ReissueReason { get; set; }
+        [MaxLength(500)]
+        public string? OriginalCertificateDetails { get; set; }
+        public int? PoliceVerifiedByUserId { get; set; }
+        public DateTime? PoliceVerifiedAt { get; set; }
+        [MaxLength(1000)]
+        public string? PoliceVerificationNotes { get; set; }
+        public bool PoliceApproved { get; set; }
+
         public ServiceType ServiceType { get; set; } = null!;
         public Citizen Citizen { get; set; } = null!;
         public WorkflowStep? CurrentStep { get; set; }
         public User? AssignedOfficer { get; set; }
+        public User? PoliceVerifiedByUser { get; set; }
 
         public ICollection<ApplicationStepHistory> StepHistory { get; set; } = new List<ApplicationStepHistory>();
         public ICollection<ApplicationDocument> Documents { get; set; } = new List<ApplicationDocument>();

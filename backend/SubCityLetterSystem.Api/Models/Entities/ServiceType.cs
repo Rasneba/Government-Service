@@ -17,6 +17,14 @@ namespace SubCityLetterSystem.Api.Models.Entities
         public bool RequiresPoliceVerification { get; set; }
         [MaxLength(2000)]
         public string? RequiredDocuments { get; set; }
+        [MaxLength(4000)]
+        public string? EligibilityCriteria { get; set; }
+        [MaxLength(4000)]
+        public string? SupportingEvidence { get; set; }
+        [MaxLength(2000)]
+        public string? Reminder { get; set; }
+        [MaxLength(500)]
+        public string? ServiceProvider { get; set; }
         public bool IsActive { get; set; } = true;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime? UpdatedAt { get; set; }
