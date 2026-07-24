@@ -103,6 +103,33 @@ using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     context.Database.EnsureCreated();
+
+    var conn = context.Database.GetDbConnection();
+    await conn.OpenAsync();
+
+    var migrations = new[]
+    {
+        "DO $$ BEGIN ALTER TABLE \"ServiceTypes\" ADD COLUMN \"EligibilityCriteria\" varchar(4000); EXCEPTION WHEN duplicate_column THEN NULL; END $$;",
+        "DO $$ BEGIN ALTER TABLE \"ServiceTypes\" ADD COLUMN \"SupportingEvidence\" varchar(4000); EXCEPTION WHEN duplicate_column THEN NULL; END $$;",
+        "DO $$ BEGIN ALTER TABLE \"ServiceTypes\" ADD COLUMN \"Reminder\" varchar(2000); EXCEPTION WHEN duplicate_column THEN NULL; END $$;",
+        "DO $$ BEGIN ALTER TABLE \"ServiceTypes\" ADD COLUMN \"ServiceProvider\" varchar(500); EXCEPTION WHEN duplicate_column THEN NULL; END $$;",
+        "DO $$ BEGIN ALTER TABLE \"Applications\" ADD COLUMN \"OriginalCertificateNumber\" varchar(100); EXCEPTION WHEN duplicate_column THEN NULL; END $$;",
+        "DO $$ BEGIN ALTER TABLE \"Applications\" ADD COLUMN \"ReissueReason\" varchar(50); EXCEPTION WHEN duplicate_column THEN NULL; END $$;",
+        "DO $$ BEGIN ALTER TABLE \"Applications\" ADD COLUMN \"OriginalCertificateDetails\" varchar(500); EXCEPTION WHEN duplicate_column THEN NULL; END $$;",
+        "DO $$ BEGIN ALTER TABLE \"Applications\" ADD COLUMN \"PoliceVerifiedByUserId\" integer; EXCEPTION WHEN duplicate_column THEN NULL; END $$;",
+        "DO $$ BEGIN ALTER TABLE \"Applications\" ADD COLUMN \"PoliceVerifiedAt\" timestamp; EXCEPTION WHEN duplicate_column THEN NULL; END $$;",
+        "DO $$ BEGIN ALTER TABLE \"Applications\" ADD COLUMN \"PoliceVerificationNotes\" varchar(1000); EXCEPTION WHEN duplicate_column THEN NULL; END $$;",
+        "DO $$ BEGIN ALTER TABLE \"Applications\" ADD COLUMN \"PoliceApproved\" boolean DEFAULT false; EXCEPTION WHEN duplicate_column THEN NULL; END $$;",
+    };
+
+    foreach (var sql in migrations)
+    {
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = sql;
+        await cmd.ExecuteNonQueryAsync();
+    }
+
+    await conn.CloseAsync();
 }
 
 await SeedData.InitializeAsync(app.Services);
