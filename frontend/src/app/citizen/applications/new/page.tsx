@@ -1,10 +1,10 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import api from '@/lib/api'
 import type { ServiceType, ApiResponse } from '@/types'
 
-export default function CitizenNewApplicationPage() {
+function CitizenNewApplicationForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const preselected = Number(searchParams.get('serviceTypeId')) || 0
@@ -80,5 +80,13 @@ export default function CitizenNewApplicationPage() {
         </div>
       </form>
     </div>
+  )
+}
+
+export default function CitizenNewApplicationPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-20 text-gray-500">Loading...</div>}>
+      <CitizenNewApplicationForm />
+    </Suspense>
   )
 }

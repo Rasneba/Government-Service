@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Layout from '@/components/Layout/Layout'
 import api from '@/lib/api'
 import type { ServiceType, ApiResponse } from '@/types'
 
-export default function NewApplicationPage() {
+function NewApplicationForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const preselectedServiceTypeId = searchParams.get('serviceTypeId')
@@ -164,5 +164,13 @@ export default function NewApplicationPage() {
         </form>
       </div>
     </Layout>
+  )
+}
+
+export default function NewApplicationPage() {
+  return (
+    <Suspense fallback={<div className="text-center py-20 text-gray-500">Loading...</div>}>
+      <NewApplicationForm />
+    </Suspense>
   )
 }
