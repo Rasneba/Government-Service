@@ -29,9 +29,7 @@ export default function ApplicationsPage() {
   const [statusFilter, setStatusFilter] = useState('')
   const pageSize = 20
 
-  useEffect(() => {
-    loadApplications()
-  }, [page, statusFilter])
+  useEffect(() => { loadApplications() }, [page, statusFilter])
 
   const loadApplications = async () => {
     setLoading(true)
@@ -41,11 +39,7 @@ export default function ApplicationsPage() {
       const res = await api.get<ApiResponse<PagedResult<ApplicationListItem>>>(`/api/Applications?${params}`)
       setApplications(res.data.data.items)
       setTotalCount(res.data.data.totalCount)
-    } catch (err) {
-      console.error('Failed to load applications', err)
-    } finally {
-      setLoading(false)
-    }
+    } catch (err) { console.error(err) } finally { setLoading(false) }
   }
 
   const totalPages = Math.ceil(totalCount / pageSize)
@@ -54,23 +48,18 @@ export default function ApplicationsPage() {
     <Layout>
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Applications</h1>
-          <Link
-            href="/applications/new"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
-          >
+          <div>
+            <h1 className="text-2xl font-bold">Certificate Applications</h1>
+            <p className="text-sm text-gray-500 mt-1">Manage certificate reissue and service applications</p>
+          </div>
+          <Link href="/applications/new" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
             New Application
           </Link>
         </div>
 
-        <div className="mb-4 flex gap-2">
-          <select
-            value={statusFilter}
-            onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }}
-            className="border rounded-lg px-3 py-2 text-sm"
-          >
+        <div className="mb-4 flex gap-2 flex-wrap">
+          <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }} className="border rounded-lg px-3 py-2 text-sm">
             <option value="">All Statuses</option>
-            <option value="Draft">Draft</option>
             <option value="Submitted">Submitted</option>
             <option value="DocumentVerification">Document Verification</option>
             <option value="UnderReview">Under Review</option>
@@ -94,9 +83,10 @@ export default function ApplicationsPage() {
                   <th className="text-left px-4 py-3 font-medium">Application #</th>
                   <th className="text-left px-4 py-3 font-medium">Service</th>
                   <th className="text-left px-4 py-3 font-medium">Citizen</th>
+                  <th className="text-left px-4 py-3 font-medium">Reason</th>
                   <th className="text-left px-4 py-3 font-medium">Status</th>
-                  <th className="text-left px-4 py-3 font-medium">Current Step</th>
-                  <th className="text-left px-4 py-3 font-medium">Priority</th>
+                  <th className="text-left px-4 py-3 font-medium">Police</th>
+                  <th className="text-left px-4 py-3 font-medium">Step</th>
                   <th className="text-left px-4 py-3 font-medium">Created</th>
                 </tr>
               </thead>
@@ -104,20 +94,30 @@ export default function ApplicationsPage() {
                 {applications.map((app) => (
                   <tr key={app.id} className="hover:bg-gray-50">
                     <td className="px-4 py-3">
-                      <Link href={`/applications/${app.id}`} className="text-blue-600 hover:underline font-medium">
-                        {app.applicationNumber}
-                      </Link>
+                      <Link href={`/applications/${app.id}`} className="text-blue-600 hover:underline font-medium">{app.applicationNumber}</Link>
                     </td>
-                    <td className="px-4 py-3">{app.serviceName}</td>
+                    <td className="px-4 py-3">
+                      <div>{app.serviceName}</div>
+                      <div className="text-xs text-gray-400">{app.serviceCode}</div>
+                    </td>
                     <td className="px-4 py-3">{app.citizenName}</td>
                     <td className="px-4 py-3">
-                      <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${statusColors[app.status] || 'bg-gray-100'}`}>
-                        {app.status}
-                      </span>
+                      {app.reissueReason ? (
+                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700">{app.reissueReason}</span>
+                      ) : <span className="text-gray-400 text-xs">-</span>}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${statusColors[app.status] || 'bg-gray-100'}`}>{app.status}</span>
                       {app.isOverdue && <span className="ml-1 text-red-500 text-xs">Overdue</span>}
                     </td>
-                    <td className="px-4 py-3 text-gray-500">{app.currentStep || '-'}</td>
-                    <td className="px-4 py-3">{app.priority}</td>
+                    <td className="px-4 py-3">
+                      {app.policeApproved ? (
+                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">Approved</span>
+                      ) : app.status === 'PoliceVerification' ? (
+                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700">Pending</span>
+                      ) : <span className="text-gray-400 text-xs">-</span>}
+                    </td>
+                    <td className="px-4 py-3 text-gray-500 text-xs">{app.currentStep || '-'}</td>
                     <td className="px-4 py-3 text-gray-500">{new Date(app.createdAt).toLocaleDateString()}</td>
                   </tr>
                 ))}
@@ -130,20 +130,8 @@ export default function ApplicationsPage() {
           <div className="flex items-center justify-between mt-4">
             <span className="text-sm text-gray-500">Page {page} of {totalPages} ({totalCount} total)</span>
             <div className="flex gap-2">
-              <button
-                onClick={() => setPage(p => Math.max(1, p - 1))}
-                disabled={page === 1}
-                className="px-3 py-1 border rounded text-sm disabled:opacity-50"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                disabled={page === totalPages}
-                className="px-3 py-1 border rounded text-sm disabled:opacity-50"
-              >
-                Next
-              </button>
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 border rounded text-sm disabled:opacity-50">Previous</button>
+              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-3 py-1 border rounded text-sm disabled:opacity-50">Next</button>
             </div>
           </div>
         )}

@@ -5,18 +5,18 @@ import { FileText, Shield, Home, Users, Phone, Mail, MapPin, ChevronRight, Build
 import { useState } from 'react'
 
 const services = [
-  { icon: FileText, title: 'Birth Certificate', desc: 'Official birth certificate issuance', category: 'Civil Documents', days: '3 days', fee: '50 Birr' },
-  { icon: FileText, title: 'Marriage Certificate', desc: 'Official marriage certificate issuance', category: 'Civil Documents', days: '3 days', fee: '75 Birr' },
-  { icon: FileText, title: 'Family Record', desc: 'Official family record document', category: 'Civil Documents', days: '3 days', fee: '40 Birr' },
-  { icon: Briefcase, title: 'Business License', desc: 'New business license application', category: 'Business Services', days: '7 days', fee: '500 Birr' },
-  { icon: Briefcase, title: 'Trade Permit', desc: 'Trade and commerce permit', category: 'Business Services', days: '5 days', fee: '200 Birr' },
-  { icon: Home, title: 'Land Ownership', desc: 'Certificate of land ownership', category: 'Land & Property', days: '14 days', fee: '1000 Birr' },
-  { icon: Home, title: 'Building Permit', desc: 'Construction building permit', category: 'Land & Property', days: '10 days', fee: '750 Birr' },
-  { icon: Shield, title: 'Police Clearance', desc: 'Certificate of good conduct', category: 'Police Services', days: '5 days', fee: '100 Birr' },
-  { icon: Shield, title: 'Background Check', desc: 'Employment background verification', category: 'Police Services', days: '7 days', fee: '150 Birr' },
-  { icon: Heart, title: 'Social Assistance', desc: 'Application for social welfare support', category: 'Social Services', days: '14 days', fee: 'Free' },
-  { icon: Heart, title: 'Disability Support', desc: 'Registration for disability benefits', category: 'Social Services', days: '10 days', fee: 'Free' },
-  { icon: Shield, title: 'Lost Property Report', desc: 'File a lost property report', category: 'Police Services', days: '1 day', fee: '25 Birr' },
+  { icon: FileText, title: 'Birth Certificate Reissue', desc: 'Replacement for lost or damaged birth certificate', category: 'Certificate Reissue', days: '7 days', fee: '50 Birr', police: true },
+  { icon: FileText, title: 'Marriage Certificate Reissue', desc: 'Replacement for lost or damaged marriage certificate', category: 'Certificate Reissue', days: '7 days', fee: '75 Birr', police: true },
+  { icon: FileText, title: 'Family Record Reissue', desc: 'Replacement for lost or damaged family record', category: 'Certificate Reissue', days: '7 days', fee: '40 Birr', police: true },
+  { icon: Home, title: 'Land Ownership Reissue', desc: 'Replacement for lost land ownership certificate', category: 'Certificate Reissue', days: '14 days', fee: '500 Birr', police: true },
+  { icon: FileText, title: 'Birth Certificate', desc: 'New birth certificate issuance', category: 'Civil Documents', days: '5 days', fee: '50 Birr', police: false },
+  { icon: FileText, title: 'Marriage Certificate', desc: 'New marriage certificate issuance', category: 'Civil Documents', days: '5 days', fee: '75 Birr', police: false },
+  { icon: Home, title: 'Land Ownership', desc: 'Certificate of land ownership', category: 'Land & Property', days: '14 days', fee: '1000 Birr', police: true },
+  { icon: Shield, title: 'Police Clearance', desc: 'Certificate of good conduct', category: 'Police Services', days: '5 days', fee: '100 Birr', police: false },
+  { icon: Shield, title: 'Background Check', desc: 'Employment background verification', category: 'Police Services', days: '7 days', fee: '150 Birr', police: false },
+  { icon: Briefcase, title: 'Business License', desc: 'New business license application', category: 'Business Services', days: '7 days', fee: '500 Birr', police: true },
+  { icon: Briefcase, title: 'Trade Permit', desc: 'Trade and commerce permit', category: 'Business Services', days: '5 days', fee: '200 Birr', police: false },
+  { icon: Home, title: 'Building Permit', desc: 'Construction building permit', category: 'Land & Property', days: '10 days', fee: '750 Birr', police: false },
 ]
 
 const woredas = [
@@ -33,20 +33,17 @@ const woredas = [
 ]
 
 const steps = [
-  { num: '1', title: 'Submit Request', desc: 'Apply online through the citizen portal' },
-  { num: '2', title: 'Upload Documents', desc: 'Upload required documents digitally' },
-  { num: '3', title: 'Verification', desc: 'Clerk verifies your documents' },
-  { num: '4', title: 'Supervisor Review', desc: 'Department head reviews application' },
-  { num: '5', title: 'Approval', desc: 'Final approval by administration' },
-  { num: '6', title: 'Pickup', desc: 'Collect your document at the office' },
+  { num: '1', title: 'Report Loss', desc: 'Apply for reissue online through the citizen portal' },
+  { num: '2', title: 'Submit Documents', desc: 'Upload affidavit of loss and required documents' },
+  { num: '3', title: 'Document Review', desc: 'Clerk reviews and validates your documents' },
+  { num: '4', title: 'Police Verify', desc: 'Police officer verifies the lost certificate claim' },
+  { num: '5', title: 'Approval', desc: 'Supervisor approves the reissue request' },
+  { num: '6', title: 'Certificate Ready', desc: 'Collect your new certificate at the office' },
 ]
 
 const categoryIcons: Record<string, any> = {
-  'Civil Documents': FileText,
-  'Business Services': Briefcase,
-  'Land & Property': Home,
-  'Police Services': Shield,
-  'Social Services': Heart,
+  'Certificate Reissue': FileText, 'Civil Documents': FileText, 'Business Services': Briefcase,
+  'Land & Property': Home, 'Police Services': Shield, 'Social Services': Heart,
 }
 
 export default function LandingPage() {
@@ -54,7 +51,6 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header */}
       <header className="bg-green-700 text-white sticky top-0 z-50 shadow-lg">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between py-3 border-b border-green-600">
@@ -78,7 +74,8 @@ export default function LandingPage() {
               <a href="#contact" className="hover:text-green-200">Contact</a>
             </div>
             <div className="flex items-center gap-3">
-              <Link href="/login" className="bg-white text-green-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-50 transition">Staff Login</Link>
+              <Link href="/login" className="bg-white text-green-700 px-3 py-2 rounded-lg text-sm font-semibold hover:bg-green-50 transition hidden md:inline">Staff</Link>
+              <Link href="/police/login" className="bg-slate-700 border border-slate-500 px-3 py-2 rounded-lg text-sm font-semibold hover:bg-slate-600 transition hidden md:inline">Police</Link>
               <Link href="/citizen/login" className="bg-green-600 border border-green-400 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-500 transition">Citizen Portal</Link>
               <button className="md:hidden" onClick={() => setMobileMenu(!mobileMenu)}>
                 {mobileMenu ? <X size={24} /> : <Menu size={24} />}
@@ -91,83 +88,72 @@ export default function LandingPage() {
               <a href="#how-it-works" className="block py-2 hover:text-green-200">How It Works</a>
               <a href="#woredas" className="block py-2 hover:text-green-200">Woredas</a>
               <a href="#contact" className="block py-2 hover:text-green-200">Contact</a>
+              <div className="flex gap-2 pt-2 border-t border-green-600">
+                <Link href="/login" className="block bg-white text-green-700 px-3 py-2 rounded text-center flex-1">Staff Login</Link>
+                <Link href="/police/login" className="block bg-slate-700 text-white px-3 py-2 rounded text-center flex-1">Police Login</Link>
+              </div>
             </div>
           )}
         </div>
       </header>
 
-      {/* Hero */}
       <section className="bg-gradient-to-br from-green-700 via-green-800 to-green-900 text-white py-20 md:py-28">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="inline-block bg-green-600/50 border border-green-400/30 rounded-full px-4 py-1 text-sm mb-6">
             Addis Ababa Civil Registration & Residency Service Agency
           </div>
           <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">
-            Gulele Sub-City<br />Government Digital Services
+            Certificate Reissue &<br />Government Digital Services
           </h1>
           <p className="text-lg md:text-xl text-green-200 mb-8 max-w-2xl mx-auto">
-            Apply for certificates, licenses, and government services online.
-            Track your application status in real-time from anywhere.
+            Lost your certificate? Apply for reissue online. Police verification included.
+            Track your application in real-time.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/citizen/register" className="bg-white text-green-700 px-8 py-3 rounded-lg font-bold text-lg hover:bg-green-50 transition inline-flex items-center justify-center gap-2">
-              Get Started <ArrowRight size={20} />
+              Apply for Reissue <ArrowRight size={20} />
             </Link>
             <Link href="/citizen/login" className="border-2 border-white text-white px-8 py-3 rounded-lg font-bold text-lg hover:bg-white/10 transition inline-flex items-center justify-center gap-2">
-              Citizen Login
+              Track Application
             </Link>
           </div>
         </div>
       </section>
 
-      {/* Stats */}
       <section className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div>
-            <div className="text-3xl font-bold text-green-700">12</div>
-            <div className="text-sm text-gray-500">Online Services</div>
-          </div>
-          <div>
-            <div className="text-3xl font-bold text-green-700">10</div>
-            <div className="text-sm text-gray-500">Woredas</div>
-          </div>
-          <div>
-            <div className="text-3xl font-bold text-green-700">8</div>
-            <div className="text-sm text-gray-500">Workflow Steps</div>
-          </div>
-          <div>
-            <div className="text-3xl font-bold text-green-700">24/7</div>
-            <div className="text-sm text-gray-500">Online Access</div>
-          </div>
+          <div><div className="text-3xl font-bold text-green-700">12</div><div className="text-sm text-gray-500">Online Services</div></div>
+          <div><div className="text-3xl font-bold text-green-700">10</div><div className="text-sm text-gray-500">Woredas</div></div>
+          <div><div className="text-3xl font-bold text-green-700">6</div><div className="text-sm text-gray-500">Workflow Steps</div></div>
+          <div><div className="text-3xl font-bold text-green-700">24/7</div><div className="text-sm text-gray-500">Online Access</div></div>
         </div>
       </section>
 
-      {/* How It Works */}
       <section id="how-it-works" className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">How It Works</h2>
-            <p className="text-gray-500 mt-2">Simple 6-step process to get your documents</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">How Certificate Reissue Works</h2>
+            <p className="text-gray-500 mt-2">6-step process with police verification for lost certificates</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {steps.map((step, i) => (
-              <div key={i} className="text-center">
-                <div className="w-12 h-12 bg-green-700 text-white rounded-full flex items-center justify-center text-lg font-bold mx-auto mb-3">{step.num}</div>
+              <div key={i} className="text-center relative">
+                <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold mx-auto mb-3 ${
+                  i === 3 ? 'bg-slate-800 text-white' : 'bg-green-700 text-white'
+                }`}>{step.num}</div>
                 <div className="font-semibold text-sm mb-1">{step.title}</div>
                 <div className="text-xs text-gray-500">{step.desc}</div>
-                {i < steps.length - 1 && <ChevronRight className="hidden lg:block absolute -right-3 top-4 text-gray-300" />}
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Services */}
       <section id="services" className="py-16">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Our Services</h2>
-            <p className="text-gray-500 mt-2">Available online through the citizen portal</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Certificate Reissue Services</h2>
+            <p className="text-gray-500 mt-2">Apply online for lost, damaged, or destroyed certificate replacement</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {services.map((s, i) => {
@@ -175,16 +161,22 @@ export default function LandingPage() {
               return (
                 <div key={i} className="bg-white border rounded-xl p-6 hover:shadow-lg transition group">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 bg-green-100 text-green-700 rounded-lg flex items-center justify-center flex-shrink-0 group-hover:bg-green-700 group-hover:text-white transition">
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 transition ${
+                      s.category === 'Certificate Reissue' ? 'bg-amber-100 text-amber-700 group-hover:bg-amber-700 group-hover:text-white' : 'bg-green-100 text-green-700 group-hover:bg-green-700 group-hover:text-white'
+                    }`}>
                       <Icon size={20} />
                     </div>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900">{s.title}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold text-gray-900">{s.title}</h3>
+                        {s.category === 'Certificate Reissue' && <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">REISSUE</span>}
+                      </div>
                       <p className="text-sm text-gray-500 mt-1">{s.desc}</p>
                       <div className="flex items-center gap-3 mt-3 text-xs text-gray-400">
                         <span className="bg-gray-100 px-2 py-1 rounded">{s.category}</span>
                         <span className="flex items-center gap-1"><Clock size={12} /> {s.days}</span>
                         <span className="font-medium text-green-700">{s.fee}</span>
+                        {s.police && <span className="flex items-center gap-1 text-slate-600"><Shield size={12} /> Police</span>}
                       </div>
                     </div>
                   </div>
@@ -192,15 +184,17 @@ export default function LandingPage() {
               )
             })}
           </div>
-          <div className="text-center mt-8">
+          <div className="text-center mt-8 flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/citizen/register" className="inline-flex items-center gap-2 bg-green-700 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-800 transition">
-              Apply Now <ArrowRight size={18} />
+              Apply for Reissue <ArrowRight size={18} />
+            </Link>
+            <Link href="/citizen/login" className="inline-flex items-center gap-2 border border-green-700 text-green-700 px-6 py-3 rounded-lg font-semibold hover:bg-green-50 transition">
+              Track Application
             </Link>
           </div>
         </div>
       </section>
 
-      {/* About */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
@@ -208,7 +202,7 @@ export default function LandingPage() {
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Gulele Sub-City Office</h2>
               <p className="text-gray-600 mb-4">
                 The Gulele Sub-City Office Administration is located at Addisu Gebeya, behind the NOC gas station.
-                We serve the residents of Gulele with civil registration, residency, and various government services.
+                We serve the residents of Gulele with civil registration, residency, and certificate reissue services.
               </p>
               <p className="text-gray-600 mb-6">
                 Under the leadership of Sub-City Sector Director Eyobel Tafu, our office works across 10 woredas
@@ -218,25 +212,27 @@ export default function LandingPage() {
                 <div className="flex items-center gap-2 text-gray-600"><Building2 size={16} className="text-green-700" /> <strong>Sector Director:</strong> Eyobel Tafu</div>
                 <div className="flex items-center gap-2 text-gray-600"><Phone size={16} className="text-green-700" /> <strong>Office Phone:</strong> 0913208337</div>
                 <div className="flex items-center gap-2 text-gray-600"><MapPin size={16} className="text-green-700" /> <strong>Location:</strong> Addisu Gebeya, behind NOC gas station</div>
-                <div className="flex items-center gap-2 text-gray-600"><Mail size={16} className="text-green-700" /> <strong>Email:</strong> info@gulele.gov.et</div>
               </div>
             </div>
             <div className="bg-white border rounded-xl p-8">
-              <h3 className="font-bold text-lg mb-4">Key Services Offered</h3>
+              <h3 className="font-bold text-lg mb-4">Certificates We Reissue</h3>
               <div className="space-y-3">
-                {['Birth Certificate', 'Adoption Certificate', 'Marriage Certificate', 'Divorce Certificate', 'Death Certificate', 'Business License', 'Police Clearance', 'Land Ownership Certificate'].map((s, i) => (
+                {['Birth Certificate', 'Marriage Certificate', 'Family Record Certificate', 'Land Ownership Certificate', 'Divorce Certificate', 'Death Certificate'].map((s, i) => (
                   <div key={i} className="flex items-center gap-3 text-sm">
                     <CheckCircle size={16} className="text-green-600 flex-shrink-0" />
                     <span>{s}</span>
+                    <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded ml-auto">Reissue</span>
                   </div>
                 ))}
+              </div>
+              <div className="mt-6 pt-4 border-t text-sm text-gray-500">
+                <p className="flex items-center gap-2"><Shield size={14} className="text-slate-600" /> All reissue requests require police verification</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Woredas */}
       <section id="woredas" className="py-16">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
@@ -248,16 +244,13 @@ export default function LandingPage() {
               <div key={i} className="bg-white border rounded-lg p-4 hover:shadow-md transition">
                 <div className="font-semibold text-sm text-green-700 mb-2">{w.name}</div>
                 <div className="text-xs text-gray-600 mb-1">{w.director}</div>
-                <a href={`tel:${w.phone}`} className="text-xs text-gray-400 flex items-center gap-1 hover:text-green-700">
-                  <Phone size={11} /> {w.phone}
-                </a>
+                <a href={`tel:${w.phone}`} className="text-xs text-gray-400 flex items-center gap-1 hover:text-green-700"><Phone size={11} /> {w.phone}</a>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Contact */}
       <section id="contact" className="py-16 bg-green-700 text-white">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid md:grid-cols-3 gap-8">
@@ -272,11 +265,12 @@ export default function LandingPage() {
             <div>
               <h3 className="font-bold text-lg mb-4">Quick Links</h3>
               <div className="space-y-2 text-sm text-green-200">
-                <a href="#services" className="block hover:text-white">Our Services</a>
+                <a href="#services" className="block hover:text-white">Certificate Reissue Services</a>
                 <a href="#woredas" className="block hover:text-white">Woreda Directory</a>
-                <Link href="/citizen/register" className="block hover:text-white">Register Account</Link>
-                <Link href="/citizen/login" className="block hover:text-white">Citizen Portal Login</Link>
-                <Link href="/login" className="block hover:text-white">Staff Portal Login</Link>
+                <Link href="/citizen/register" className="block hover:text-white">Register for Reissue</Link>
+                <Link href="/citizen/login" className="block hover:text-white">Citizen Portal</Link>
+                <Link href="/police/login" className="block hover:text-white">Police Verification Portal</Link>
+                <Link href="/login" className="block hover:text-white">Staff Portal</Link>
               </div>
             </div>
             <div>
@@ -285,16 +279,13 @@ export default function LandingPage() {
                 <div>Monday - Friday: 8:30 AM - 5:30 PM</div>
                 <div>Saturday: 8:30 AM - 12:30 PM</div>
                 <div>Sunday & Holidays: Closed</div>
-                <div className="mt-4 pt-4 border-t border-green-600 text-white font-medium">
-                  Online services available 24/7
-                </div>
+                <div className="mt-4 pt-4 border-t border-green-600 text-white font-medium">Online reissue applications 24/7</div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="bg-green-900 text-green-300 py-6">
         <div className="max-w-7xl mx-auto px-4 text-center text-sm">
           <p>Addis Ababa Civil Registration & Residency Service Agency - Gulele Sub-City</p>

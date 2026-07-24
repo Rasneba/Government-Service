@@ -30,13 +30,16 @@ export default function CitizenApplicationsPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">My Applications</h1>
-        <Link href="/citizen/services" className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700">New Application</Link>
+        <div>
+          <h1 className="text-2xl font-bold">My Applications</h1>
+          <p className="text-sm text-gray-500 mt-1">Track your certificate reissue and service applications</p>
+        </div>
+        <Link href="/citizen/applications/new" className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700">New Reissue Request</Link>
       </div>
       {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> : apps.length === 0 ? (
         <div className="text-center py-12 text-gray-500 bg-white border rounded-lg">
           <p className="mb-2">No applications yet</p>
-          <Link href="/citizen/services" className="text-green-600 hover:underline">Browse services to get started</Link>
+          <Link href="/citizen/applications/new" className="text-green-600 hover:underline">Apply for certificate reissue</Link>
         </div>
       ) : (
         <div className="bg-white border rounded-lg overflow-hidden">
@@ -44,6 +47,7 @@ export default function CitizenApplicationsPage() {
             <thead className="bg-gray-50 border-b"><tr>
               <th className="text-left px-4 py-3 font-medium">Application #</th>
               <th className="text-left px-4 py-3 font-medium">Service</th>
+              <th className="text-left px-4 py-3 font-medium">Reason</th>
               <th className="text-left px-4 py-3 font-medium">Status</th>
               <th className="text-left px-4 py-3 font-medium">Step</th>
               <th className="text-left px-4 py-3 font-medium">Date</th>
@@ -53,6 +57,9 @@ export default function CitizenApplicationsPage() {
                 <tr key={app.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => router.push(`/citizen/applications/${app.id}`)}>
                   <td className="px-4 py-3 font-medium text-blue-600">{app.applicationNumber}</td>
                   <td className="px-4 py-3">{app.serviceName}</td>
+                  <td className="px-4 py-3">
+                    {app.reissueReason ? <span className="px-2 py-0.5 rounded text-xs bg-amber-100 text-amber-700">{app.reissueReason}</span> : <span className="text-gray-400 text-xs">-</span>}
+                  </td>
                   <td className="px-4 py-3"><span className={`px-2 py-1 rounded text-xs font-medium ${statusColors[app.status] || 'bg-gray-100'}`}>{app.status}</span></td>
                   <td className="px-4 py-3 text-gray-500">{app.currentStep || '-'}</td>
                   <td className="px-4 py-3 text-gray-500">{new Date(app.createdAt).toLocaleDateString()}</td>

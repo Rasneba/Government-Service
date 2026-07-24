@@ -37,42 +37,29 @@ export default function ApplicationDetailPage() {
   const [noteText, setNoteText] = useState('')
   const [addingNote, setAddingNote] = useState(false)
 
-  useEffect(() => {
-    loadApplication()
-  }, [id])
+  useEffect(() => { loadApplication() }, [id])
 
   const loadApplication = async () => {
     try {
       const res = await api.get<ApiResponse<ApplicationDetail>>(`/api/Applications/${id}`)
       setApplication(res.data.data)
-    } catch (err) {
-      console.error('Failed to load application', err)
-    } finally {
-      setLoading(false)
-    }
+    } catch (err) { console.error('Failed to load application', err) }
+    finally { setLoading(false) }
   }
 
   const handleAdvanceStep = async () => {
     try {
       await api.put(`/api/Applications/${id}/advance`, { note: noteText || null })
-      setNoteText('')
-      loadApplication()
-    } catch (err) {
-      console.error('Failed to advance step', err)
-      alert('Failed to advance step')
-    }
+      setNoteText(''); loadApplication()
+    } catch (err) { alert('Failed to advance step') }
   }
 
   const handleRejectStep = async () => {
     const reason = prompt('Enter rejection reason:')
     if (!reason) return
     try {
-      await api.put(`/api/Applications/${id}/reject`, { note: reason })
-      loadApplication()
-    } catch (err) {
-      console.error('Failed to reject step', err)
-      alert('Failed to reject step')
-    }
+      await api.put(`/api/Applications/${id}/reject`, { note: reason }); loadApplication()
+    } catch (err) { alert('Failed to reject step') }
   }
 
   const handleAddNote = async () => {
@@ -80,25 +67,20 @@ export default function ApplicationDetailPage() {
     setAddingNote(true)
     try {
       await api.post(`/api/Applications/${id}/notes`, { note: noteText, isInternal: false })
-      setNoteText('')
-      loadApplication()
-    } catch (err) {
-      console.error('Failed to add note', err)
-    } finally {
-      setAddingNote(false)
-    }
+      setNoteText(''); loadApplication()
+    } catch (err) { console.error(err) } finally { setAddingNote(false) }
   }
 
   if (loading) return <Layout><div className="p-6 text-center text-gray-500">Loading...</div></Layout>
   if (!application) return <Layout><div className="p-6 text-center text-gray-500">Application not found</div></Layout>
 
+  const isPoliceStep = application.currentStepName === 'Police Verification'
+
   return (
     <Layout>
       <div className="p-6">
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-          <Link href="/applications" className="hover:underline">Applications</Link>
-          <span>/</span>
-          <span>{application.applicationNumber}</span>
+          <Link href="/applications" className="hover:underline">Applications</Link><span>/</span><span>{application.applicationNumber}</span>
         </div>
 
         <div className="flex items-start justify-between mb-6">
@@ -106,9 +88,7 @@ export default function ApplicationDetailPage() {
             <h1 className="text-2xl font-bold">{application.applicationNumber}</h1>
             <p className="text-gray-500">{application.serviceName}</p>
           </div>
-          <span className={`px-3 py-1 rounded text-sm font-medium ${statusColors[application.status] || 'bg-gray-100'}`}>
-            {application.status}
-          </span>
+          <span className={`px-3 py-1 rounded text-sm font-medium ${statusColors[application.status] || 'bg-gray-100'}`}>{application.status}</span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -126,23 +106,48 @@ export default function ApplicationDetailPage() {
               </div>
             </div>
 
+            {(application.reissueReason || application.originalCertificateNumber) && (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-6">
+                <h2 className="font-semibold text-amber-800 mb-3">Reissue / Lost Certificate Details</h2>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div><span className="text-gray-500">Reason:</span> <span className="font-medium text-amber-700">{application.reissueReason}</span></div>
+                  <div><span className="text-gray-500">Original Cert #:</span> <span className="font-mono font-medium">{application.originalCertificateNumber || 'N/A'}</span></div>
+                  {application.originalCertificateDetails && (
+                    <div className="col-span-2"><span className="text-gray-500">Details:</span><p className="mt-1 text-gray-700 bg-white p-3 rounded border">{application.originalCertificateDetails}</p></div>
+                  )}
+                </div>
+                {application.policeVerifiedAt && (
+                  <div className="mt-4 pt-3 border-t border-amber-200">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div><span className="text-gray-500">Police Status:</span> <span className={`font-medium ${application.policeApproved ? 'text-green-700' : 'text-red-700'}`}>{application.policeApproved ? 'Approved' : 'Rejected'}</span></div>
+                      <div><span className="text-gray-500">Verified:</span> {new Date(application.policeVerifiedAt).toLocaleString()}</div>
+                    </div>
+                    {application.policeVerificationNotes && (
+                      <div className="mt-2 text-sm"><span className="text-gray-500">Police Notes:</span><p className="mt-1 text-gray-700 bg-white p-2 rounded border text-xs">{application.policeVerificationNotes}</p></div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="bg-white border rounded-lg p-6">
               <h2 className="font-semibold mb-4">Workflow Progress</h2>
               <div className="space-y-3">
                 {application.workflowSteps.map((step) => (
                   <div key={step.id} className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium bg-gray-100">
-                      {step.stepOrder}
-                    </div>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium ${
+                      step.executionStatus === 'Completed' ? 'bg-green-500 text-white' :
+                      step.executionStatus === 'InProgress' ? 'bg-blue-500 text-white' :
+                      step.executionStatus === 'Rejected' ? 'bg-red-500 text-white' :
+                      'bg-gray-100 text-gray-500'
+                    }`}>{step.stepOrder}</div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <span className="text-sm font-medium">{step.name}</span>
-                        <span className={`px-2 py-0.5 rounded text-xs ${stepStatusColors[step.executionStatus] || 'bg-gray-100'}`}>
-                          {step.executionStatus}
-                        </span>
+                        <span className={`px-2 py-0.5 rounded text-xs ${stepStatusColors[step.executionStatus] || 'bg-gray-100'}`}>{step.executionStatus}</span>
                         {step.isAutoStep && <span className="text-xs text-gray-400">(auto)</span>}
                       </div>
-                      {step.assignedTo && <div className="text-xs text-gray-500">Assigned to: {step.assignedTo}</div>}
+                      {step.assignedRole && <div className="text-xs text-gray-400">Role: {step.assignedRole}</div>}
                     </div>
                   </div>
                 ))}
@@ -169,36 +174,19 @@ export default function ApplicationDetailPage() {
 
             <div className="bg-white border rounded-lg p-6">
               <h2 className="font-semibold mb-3">Add Note</h2>
-              <textarea
-                value={noteText}
-                onChange={(e) => setNoteText(e.target.value)}
-                className="w-full border rounded-lg px-3 py-2 text-sm mb-3"
-                rows={3}
-                placeholder="Type a note..."
-              />
+              <textarea value={noteText} onChange={(e) => setNoteText(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm mb-3" rows={3} placeholder="Type a note..." />
               <div className="flex gap-2">
-                <button
-                  onClick={handleAddNote}
-                  disabled={!noteText.trim() || addingNote}
-                  className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 disabled:opacity-50"
-                >
-                  Add Note
-                </button>
-                {application.status !== 'Completed' && application.status !== 'Cancelled' && application.status !== 'Rejected' && (
+                <button onClick={handleAddNote} disabled={!noteText.trim() || addingNote} className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 disabled:opacity-50">Add Note</button>
+                {application.status !== 'Completed' && application.status !== 'Cancelled' && application.status !== 'Rejected' && !isPoliceStep && (
                   <>
-                    <button
-                      onClick={handleAdvanceStep}
-                      className="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700"
-                    >
-                      Advance Step
-                    </button>
-                    <button
-                      onClick={handleRejectStep}
-                      className="bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700"
-                    >
-                      Reject
-                    </button>
+                    <button onClick={handleAdvanceStep} className="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700">Advance Step</button>
+                    <button onClick={handleRejectStep} className="bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700">Reject</button>
                   </>
+                )}
+                {isPoliceStep && (
+                  <div className="bg-amber-50 border border-amber-200 text-amber-700 text-xs px-3 py-2 rounded">
+                    This step must be completed through the Police Portal
+                  </div>
                 )}
               </div>
             </div>

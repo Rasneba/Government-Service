@@ -303,6 +303,8 @@ export interface ApplicationListItem {
   currentStep?: string
   assignedOfficer?: string
   priority: string
+  reissueReason?: string
+  policeApproved: boolean
   createdAt: string
   dueDate?: string
   isOverdue: boolean
@@ -325,6 +327,12 @@ export interface ApplicationDetail {
   feeAmount: number
   feePaid: boolean
   rejectionReason?: string
+  originalCertificateNumber?: string
+  reissueReason?: string
+  originalCertificateDetails?: string
+  policeApproved: boolean
+  policeVerificationNotes?: string
+  policeVerifiedAt?: string
   createdAt: string
   submittedAt?: string
   dueDate?: string
@@ -437,4 +445,11 @@ export interface FeedbackDto {
   message?: string
   isPublic: boolean
   createdAt: string
+}
+
+export interface PoliceStats {
+  pendingVerifications: number
+  approvedToday: number
+  rejectedToday: number
+  totalReviewed: number
 }

@@ -47,6 +47,28 @@ export async function citizenLogout(): Promise<void> {
   }
 }
 
+export async function policeLogin(username: string, password: string): Promise<LoginResponse> {
+  const response = await api.post('/auth/login', { username, password })
+  const data = response.data
+
+  if (data.success && typeof window !== 'undefined') {
+    localStorage.setItem('policeToken', data.data.token)
+    localStorage.setItem('policeUser', JSON.stringify(data.data.user))
+    setCookie('policeToken', data.data.token, 7)
+  }
+
+  return data.data
+}
+
+export async function policeLogout(): Promise<void> {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('policeToken')
+    localStorage.removeItem('policeUser')
+    deleteCookie('policeToken')
+    window.location.href = '/police/login'
+  }
+}
+
 export async function getCurrentUser(): Promise<User | null> {
   try {
     const response = await api.get('/auth/me')
@@ -73,6 +95,14 @@ export function logout(): void {
 export function getStoredUser(): User | null {
   if (typeof window !== 'undefined') {
     const user = localStorage.getItem('user')
+    return user ? JSON.parse(user) : null
+  }
+  return null
+}
+
+export function getStoredPoliceUser(): User | null {
+  if (typeof window !== 'undefined') {
+    const user = localStorage.getItem('policeUser')
     return user ? JSON.parse(user) : null
   }
   return null
