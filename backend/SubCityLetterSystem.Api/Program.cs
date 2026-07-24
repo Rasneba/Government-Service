@@ -75,7 +75,9 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
                 "http://localhost:3000",
-                "https://government-service-two.vercel.app"
+                "https://government-service-two.vercel.app",
+                "https://government-service-production.up.railway.app",
+                "https://government-service-staging.up.railway.app"
             )
             .AllowAnyMethod()
             .AllowAnyHeader()
