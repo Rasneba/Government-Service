@@ -279,9 +279,9 @@ namespace SubCityLetterSystem.Api.Data
             if (missingWfs.Any()) { context.WorkflowDefinitions.AddRange(missingWfs); await context.SaveChangesAsync(); }
 
             // Workflow Steps - add if workflow definitions don't have steps yet
-            var wfBirth = await context.WorkflowDefinitions.FirstAsync(w => w.Name == "Birth Registration Workflow");
-            var wfMarriage = await context.WorkflowDefinitions.FirstAsync(w => w.Name == "Marriage Registration Workflow");
-            var wfStandard = await context.WorkflowDefinitions.FirstAsync(w => w.Name == "Standard Service Workflow");
+            var wfBirth = await context.WorkflowDefinitions.FirstAsync(w => w.ServiceTypeId == brcType.Id);
+            var wfMarriage = await context.WorkflowDefinitions.FirstAsync(w => w.ServiceTypeId == mrcType.Id);
+            var wfStandard = await context.WorkflowDefinitions.FirstAsync(w => w.ServiceTypeId == ridType.Id);
 
             if (!await context.WorkflowSteps.AnyAsync(s => s.WorkflowDefinitionId == wfBirth.Id))
             {

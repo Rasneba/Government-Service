@@ -18,7 +18,7 @@ export default function ServicesPage() {
 
   const loadCategories = async () => {
     try {
-      const res = await api.get<ApiResponse<ServiceCategory[]>>('/api/Services/categories')
+      const res = await api.get<ApiResponse<ServiceCategory[]>>('/Services/categories')
       setCategories(res.data.data)
     } catch (err) {
       console.error('Failed to load categories', err)
@@ -28,7 +28,7 @@ export default function ServicesPage() {
   const loadServiceTypes = async (categoryId?: number) => {
     setLoading(true)
     try {
-      const url = categoryId ? `/api/Services/types?categoryId=${categoryId}` : '/api/Services/types'
+      const url = categoryId ? `/Services/types?categoryId=${categoryId}` : '/Services/types'
       const res = await api.get<ApiResponse<ServiceType[]>>(url)
       setServiceTypes(res.data.data)
     } catch (err) {

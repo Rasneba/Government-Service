@@ -25,7 +25,7 @@ function NewApplicationForm() {
 
   const loadServiceTypes = async () => {
     try {
-      const res = await api.get<ApiResponse<ServiceType[]>>('/api/Services/types')
+      const res = await api.get<ApiResponse<ServiceType[]>>('/Services/types')
       setServiceTypes(res.data.data)
     } catch (err) {
       console.error('Failed to load service types', err)
@@ -42,7 +42,7 @@ function NewApplicationForm() {
 
     setLoading(true)
     try {
-      await api.post('/api/Applications', {
+      await api.post('/Applications', {
         serviceTypeId: selectedServiceTypeId,
         subject,
         description,

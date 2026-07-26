@@ -28,7 +28,7 @@ function CitizenNewApplicationForm() {
   }, [router])
 
   const selected = serviceTypes.find(st => st.id === selectedId)
-  const isReissue = selected?.code?.includes('R') || selected?.name?.toLowerCase().includes('reissue')
+  const isReissue = true
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

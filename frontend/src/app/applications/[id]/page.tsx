@@ -41,7 +41,7 @@ export default function ApplicationDetailPage() {
 
   const loadApplication = async () => {
     try {
-      const res = await api.get<ApiResponse<ApplicationDetail>>(`/api/Applications/${id}`)
+      const res = await api.get<ApiResponse<ApplicationDetail>>(`/Applications/${id}`)
       setApplication(res.data.data)
     } catch (err) { console.error('Failed to load application', err) }
     finally { setLoading(false) }
@@ -49,7 +49,7 @@ export default function ApplicationDetailPage() {
 
   const handleAdvanceStep = async () => {
     try {
-      await api.put(`/api/Applications/${id}/advance`, { note: noteText || null })
+      await api.put(`/Applications/${id}/advance`, { note: noteText || null })
       setNoteText(''); loadApplication()
     } catch (err) { alert('Failed to advance step') }
   }
@@ -58,7 +58,7 @@ export default function ApplicationDetailPage() {
     const reason = prompt('Enter rejection reason:')
     if (!reason) return
     try {
-      await api.put(`/api/Applications/${id}/reject`, { note: reason }); loadApplication()
+      await api.put(`/Applications/${id}/reject`, { note: reason }); loadApplication()
     } catch (err) { alert('Failed to reject step') }
   }
 
@@ -66,7 +66,7 @@ export default function ApplicationDetailPage() {
     if (!noteText.trim()) return
     setAddingNote(true)
     try {
-      await api.post(`/api/Applications/${id}/notes`, { note: noteText, isInternal: false })
+      await api.post(`/Applications/${id}/notes`, { note: noteText, isInternal: false })
       setNoteText(''); loadApplication()
     } catch (err) { console.error(err) } finally { setAddingNote(false) }
   }

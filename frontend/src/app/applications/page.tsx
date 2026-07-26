@@ -36,7 +36,7 @@ export default function ApplicationsPage() {
     try {
       const params = new URLSearchParams({ page: page.toString(), pageSize: pageSize.toString() })
       if (statusFilter) params.set('status', statusFilter)
-      const res = await api.get<ApiResponse<PagedResult<ApplicationListItem>>>(`/api/Applications?${params}`)
+      const res = await api.get<ApiResponse<PagedResult<ApplicationListItem>>>(`/Applications?${params}`)
       setApplications(res.data.data.items)
       setTotalCount(res.data.data.totalCount)
     } catch (err) { console.error(err) } finally { setLoading(false) }
