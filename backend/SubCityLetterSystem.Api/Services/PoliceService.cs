@@ -129,7 +129,7 @@ namespace SubCityLetterSystem.Api.Services
                             AssignedRole = s.AssignedRole,
                             IsAutoStep = s.IsAutoStep,
                             SLAHours = s.SLAHours,
-                            ExecutionStatus = a.StepHistory.Any(h => h.WorkflowStepId == s.Id) ? a.StepHistory.First(h => h.WorkflowStepId == s.Id).Status.ToString() : "Pending"
+                            ExecutionStatus = a.StepHistory.Where(h => h.WorkflowStepId == s.Id).Select(h => h.Status.ToString()).FirstOrDefault() ?? "Pending"
                         }).ToList()
                 }).FirstOrDefaultAsync();
         }
@@ -137,7 +137,7 @@ namespace SubCityLetterSystem.Api.Services
         public async Task<ApplicationDetailDto> ReviewApplicationAsync(int applicationId, int userId, PoliceReviewDto dto)
         {
             var application = await _context.Applications
-                .Include(a => a.ServiceType.WorkflowDefinitions).ThenInclude(w => w.Steps.OrderBy(s => s.StepOrder))
+                .Include(a => a.ServiceType.WorkflowDefinitions).ThenInclude(w => w.Steps)
                 .Include(a => a.StepHistory)
                 .FirstOrDefaultAsync(a => a.Id == applicationId);
 

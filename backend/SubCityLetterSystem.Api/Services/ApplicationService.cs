@@ -208,7 +208,7 @@ namespace SubCityLetterSystem.Api.Services
         public async Task<ApplicationDetailDto> AdvanceStepAsync(int applicationId, int userId, string? notes)
         {
             var application = await _context.Applications
-                .Include(a => a.ServiceType.WorkflowDefinitions).ThenInclude(w => w.Steps.OrderBy(s => s.StepOrder))
+                .Include(a => a.ServiceType.WorkflowDefinitions).ThenInclude(w => w.Steps)
                 .Include(a => a.StepHistory).ThenInclude(h => h.WorkflowStep)
                 .FirstOrDefaultAsync(a => a.Id == applicationId);
 

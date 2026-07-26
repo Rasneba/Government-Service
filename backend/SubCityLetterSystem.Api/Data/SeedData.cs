@@ -288,10 +288,25 @@ namespace SubCityLetterSystem.Api.Data
                 context.WorkflowSteps.AddRange(
                     new WorkflowStep { Name = "Application", Description = "Citizen submits birth registration application", StepOrder = 1, StepType = WorkflowStepType.Submission, IsAutoStep = false, SLAHours = 1, WorkflowDefinitionId = wfBirth.Id },
                     new WorkflowStep { Name = "Document Review", Description = "Clerk reviews documents and birth notification", StepOrder = 2, StepType = WorkflowStepType.Verification, AssignedRole = "Clerk", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wfBirth.Id },
-                    new WorkflowStep { Name = "Approval", Description = "Supervisor approves the registration", StepOrder = 3, StepType = WorkflowStepType.Approval, AssignedRole = "SubCityAdministrator", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wfBirth.Id },
-                    new WorkflowStep { Name = "Certificate Issued", Description = "Certificate is generated and citizen notified", StepOrder = 4, StepType = WorkflowStepType.DocumentGeneration, IsAutoStep = true, SLAHours = 1, WorkflowDefinitionId = wfBirth.Id }
+                    new WorkflowStep { Name = "Police Verification", Description = "Police verifies the application", StepOrder = 3, StepType = WorkflowStepType.PoliceVerification, AssignedRole = "PoliceAdministrator", IsAutoStep = false, SLAHours = 48, WorkflowDefinitionId = wfBirth.Id },
+                    new WorkflowStep { Name = "Approval", Description = "Supervisor approves the registration", StepOrder = 4, StepType = WorkflowStepType.Approval, AssignedRole = "SubCityAdministrator", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wfBirth.Id },
+                    new WorkflowStep { Name = "Certificate Issued", Description = "Certificate is generated and citizen notified", StepOrder = 5, StepType = WorkflowStepType.DocumentGeneration, IsAutoStep = true, SLAHours = 1, WorkflowDefinitionId = wfBirth.Id }
                 );
                 await context.SaveChangesAsync();
+            }
+            else
+            {
+                var hasPoliceStep = await context.WorkflowSteps.AnyAsync(s => s.WorkflowDefinitionId == wfBirth.Id && s.StepType == WorkflowStepType.PoliceVerification);
+                if (!hasPoliceStep)
+                {
+                    var currentSteps = await context.WorkflowSteps.Where(s => s.WorkflowDefinitionId == wfBirth.Id).OrderBy(s => s.StepOrder).ToListAsync();
+                    context.WorkflowSteps.Add(new WorkflowStep { Name = "Police Verification", Description = "Police verifies the application", StepOrder = 3, StepType = WorkflowStepType.PoliceVerification, AssignedRole = "PoliceAdministrator", IsAutoStep = false, SLAHours = 48, WorkflowDefinitionId = wfBirth.Id });
+                    foreach (var step in currentSteps.Where(s => s.StepOrder >= 3))
+                    {
+                        step.StepOrder += 1;
+                    }
+                    await context.SaveChangesAsync();
+                }
             }
 
             if (!await context.WorkflowSteps.AnyAsync(s => s.WorkflowDefinitionId == wfMarriage.Id))
@@ -299,11 +314,26 @@ namespace SubCityLetterSystem.Api.Data
                 context.WorkflowSteps.AddRange(
                     new WorkflowStep { Name = "Application", Description = "Couple submits marriage registration", StepOrder = 1, StepType = WorkflowStepType.Submission, IsAutoStep = false, SLAHours = 1, WorkflowDefinitionId = wfMarriage.Id },
                     new WorkflowStep { Name = "Document Review", Description = "Clerk reviews IDs and required documents", StepOrder = 2, StepType = WorkflowStepType.Verification, AssignedRole = "Clerk", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wfMarriage.Id },
-                    new WorkflowStep { Name = "15-Day Notice Period", Description = "Public notice posted for 15 consecutive days", StepOrder = 3, StepType = WorkflowStepType.DocumentValidation, IsAutoStep = true, SLAHours = 360, WorkflowDefinitionId = wfMarriage.Id },
-                    new WorkflowStep { Name = "Approval", Description = "Registrar approves the marriage registration", StepOrder = 4, StepType = WorkflowStepType.Approval, AssignedRole = "SubCityAdministrator", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wfMarriage.Id },
-                    new WorkflowStep { Name = "Certificate Issued", Description = "Marriage certificate is generated", StepOrder = 5, StepType = WorkflowStepType.DocumentGeneration, IsAutoStep = true, SLAHours = 1, WorkflowDefinitionId = wfMarriage.Id }
+                    new WorkflowStep { Name = "Police Verification", Description = "Police verifies the marriage application", StepOrder = 3, StepType = WorkflowStepType.PoliceVerification, AssignedRole = "PoliceAdministrator", IsAutoStep = false, SLAHours = 48, WorkflowDefinitionId = wfMarriage.Id },
+                    new WorkflowStep { Name = "15-Day Notice Period", Description = "Public notice posted for 15 consecutive days", StepOrder = 4, StepType = WorkflowStepType.DocumentValidation, IsAutoStep = true, SLAHours = 360, WorkflowDefinitionId = wfMarriage.Id },
+                    new WorkflowStep { Name = "Approval", Description = "Registrar approves the marriage registration", StepOrder = 5, StepType = WorkflowStepType.Approval, AssignedRole = "SubCityAdministrator", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wfMarriage.Id },
+                    new WorkflowStep { Name = "Certificate Issued", Description = "Marriage certificate is generated", StepOrder = 6, StepType = WorkflowStepType.DocumentGeneration, IsAutoStep = true, SLAHours = 1, WorkflowDefinitionId = wfMarriage.Id }
                 );
                 await context.SaveChangesAsync();
+            }
+            else
+            {
+                var hasPoliceStep = await context.WorkflowSteps.AnyAsync(s => s.WorkflowDefinitionId == wfMarriage.Id && s.StepType == WorkflowStepType.PoliceVerification);
+                if (!hasPoliceStep)
+                {
+                    var currentSteps = await context.WorkflowSteps.Where(s => s.WorkflowDefinitionId == wfMarriage.Id).OrderBy(s => s.StepOrder).ToListAsync();
+                    context.WorkflowSteps.Add(new WorkflowStep { Name = "Police Verification", Description = "Police verifies the marriage application", StepOrder = 3, StepType = WorkflowStepType.PoliceVerification, AssignedRole = "PoliceAdministrator", IsAutoStep = false, SLAHours = 48, WorkflowDefinitionId = wfMarriage.Id });
+                    foreach (var step in currentSteps.Where(s => s.StepOrder >= 3))
+                    {
+                        step.StepOrder += 1;
+                    }
+                    await context.SaveChangesAsync();
+                }
             }
 
             if (!await context.WorkflowSteps.AnyAsync(s => s.WorkflowDefinitionId == wfStandard.Id))
@@ -311,10 +341,25 @@ namespace SubCityLetterSystem.Api.Data
                 context.WorkflowSteps.AddRange(
                     new WorkflowStep { Name = "Application", Description = "Citizen submits application", StepOrder = 1, StepType = WorkflowStepType.Submission, IsAutoStep = false, SLAHours = 1, WorkflowDefinitionId = wfStandard.Id },
                     new WorkflowStep { Name = "Document Review", Description = "Clerk reviews documents", StepOrder = 2, StepType = WorkflowStepType.Verification, AssignedRole = "Clerk", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wfStandard.Id },
-                    new WorkflowStep { Name = "Approval", Description = "Supervisor approval", StepOrder = 3, StepType = WorkflowStepType.Approval, AssignedRole = "SubCityAdministrator", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wfStandard.Id },
-                    new WorkflowStep { Name = "Service Completed", Description = "Document issued and citizen notified", StepOrder = 4, StepType = WorkflowStepType.DocumentGeneration, IsAutoStep = true, SLAHours = 1, WorkflowDefinitionId = wfStandard.Id }
+                    new WorkflowStep { Name = "Police Verification", Description = "Police verifies the application", StepOrder = 3, StepType = WorkflowStepType.PoliceVerification, AssignedRole = "PoliceAdministrator", IsAutoStep = false, SLAHours = 48, WorkflowDefinitionId = wfStandard.Id },
+                    new WorkflowStep { Name = "Approval", Description = "Supervisor approval", StepOrder = 4, StepType = WorkflowStepType.Approval, AssignedRole = "SubCityAdministrator", IsAutoStep = false, SLAHours = 24, WorkflowDefinitionId = wfStandard.Id },
+                    new WorkflowStep { Name = "Service Completed", Description = "Document issued and citizen notified", StepOrder = 5, StepType = WorkflowStepType.DocumentGeneration, IsAutoStep = true, SLAHours = 1, WorkflowDefinitionId = wfStandard.Id }
                 );
                 await context.SaveChangesAsync();
+            }
+            else
+            {
+                var hasPoliceStep = await context.WorkflowSteps.AnyAsync(s => s.WorkflowDefinitionId == wfStandard.Id && s.StepType == WorkflowStepType.PoliceVerification);
+                if (!hasPoliceStep)
+                {
+                    var currentSteps = await context.WorkflowSteps.Where(s => s.WorkflowDefinitionId == wfStandard.Id).OrderBy(s => s.StepOrder).ToListAsync();
+                    context.WorkflowSteps.Add(new WorkflowStep { Name = "Police Verification", Description = "Police verifies the application", StepOrder = 3, StepType = WorkflowStepType.PoliceVerification, AssignedRole = "PoliceAdministrator", IsAutoStep = false, SLAHours = 48, WorkflowDefinitionId = wfStandard.Id });
+                    foreach (var step in currentSteps.Where(s => s.StepOrder >= 3))
+                    {
+                        step.StepOrder += 1;
+                    }
+                    await context.SaveChangesAsync();
+                }
             }
         }
     }
