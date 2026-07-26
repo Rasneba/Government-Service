@@ -135,7 +135,7 @@ namespace SubCityLetterSystem.Api.Services
                             AssignedRole = s.AssignedRole,
                             IsAutoStep = s.IsAutoStep,
                             SLAHours = s.SLAHours,
-                            ExecutionStatus = a.StepHistory.Any(h => h.WorkflowStepId == s.Id) ? a.StepHistory.First(h => h.WorkflowStepId == s.Id).Status.ToString() : "Pending"
+                            ExecutionStatus = a.StepHistory.Where(h => h.WorkflowStepId == s.Id).Select(h => h.Status.ToString()).FirstOrDefault() ?? "Pending"
                         }).ToList()
                 }).FirstOrDefaultAsync();
         }
@@ -168,12 +168,14 @@ namespace SubCityLetterSystem.Api.Services
             await _context.SaveChangesAsync();
 
             var workflow = await _context.WorkflowDefinitions
-                .Include(w => w.Steps.OrderBy(s => s.StepOrder))
+                .Include(w => w.Steps)
                 .FirstOrDefaultAsync(w => w.ServiceTypeId == dto.ServiceTypeId && w.IsActive);
 
-            if (workflow != null)
+            if (workflow != null && workflow.Steps.Any())
             {
-                foreach (var step in workflow.Steps)
+                var orderedSteps = workflow.Steps.OrderBy(s => s.StepOrder).ToList();
+
+                foreach (var step in orderedSteps)
                 {
                     _context.ApplicationStepHistories.Add(new ApplicationStepHistory
                     {
@@ -187,13 +189,16 @@ namespace SubCityLetterSystem.Api.Services
 
                 await _context.SaveChangesAsync();
 
-                var firstStep = workflow.Steps.First();
+                var firstStep = orderedSteps[0];
                 application.CurrentStepId = firstStep.Id;
 
                 var firstHistory = await _context.ApplicationStepHistories
-                    .FirstAsync(h => h.ApplicationId == application.Id && h.WorkflowStepId == firstStep.Id);
-                firstHistory.Status = StepExecutionStatus.InProgress;
-                firstHistory.StartedAt = DateTime.UtcNow;
+                    .FirstOrDefaultAsync(h => h.ApplicationId == application.Id && h.WorkflowStepId == firstStep.Id);
+                if (firstHistory != null)
+                {
+                    firstHistory.Status = StepExecutionStatus.InProgress;
+                    firstHistory.StartedAt = DateTime.UtcNow;
+                }
             }
 
             await _context.SaveChangesAsync();
