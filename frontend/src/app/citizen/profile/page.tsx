@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import api from '@/lib/api'
 import type { Citizen, ApiResponse } from '@/types'
+import { useTranslation } from '@/lib/I18nContext'
 
 export default function CitizenProfilePage() {
   const router = useRouter()
@@ -14,6 +15,7 @@ export default function CitizenProfilePage() {
   const [pwForm, setPwForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' })
   const [changingPw, setChangingPw] = useState(false)
   const [msg, setMsg] = useState('')
+  const { t } = useTranslation()
 
   useEffect(() => {
     const token = localStorage.getItem('citizenToken')
@@ -45,53 +47,53 @@ export default function CitizenProfilePage() {
     } catch { setMsg('Failed to change password') } finally { setChangingPw(false) }
   }
 
-  if (loading) return <div className="text-center py-20 text-gray-500">Loading...</div>
-  if (!citizen) return <div className="text-center py-20 text-gray-500">Not found</div>
+  if (loading) return <div className="text-center py-20 text-gray-500">{t('common.loading')}</div>
+  if (!citizen) return <div className="text-center py-20 text-gray-500">{t('common.error')}</div>
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold mb-6">My Profile</h1>
+      <h1 className="text-2xl font-bold mb-6">{t('profile.title')}</h1>
       {msg && <div className={`mb-4 px-4 py-2 rounded-lg text-sm ${msg.includes('Failed') ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>{msg}</div>}
 
       <div className="bg-white border rounded-lg p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold">Personal Information</h2>
-          {!editing && <button onClick={() => setEditing(true)} className="text-green-600 text-sm hover:underline">Edit</button>}
+          <h2 className="font-semibold">{t('profile.personalInfo')}</h2>
+          {!editing && <button onClick={() => setEditing(true)} className="text-green-600 text-sm hover:underline">{t('profile.editProfile')}</button>}
         </div>
         <div className="space-y-4">
-          <div><label className="block text-sm font-medium mb-1">Full Name</label>
+          <div><label className="block text-sm font-medium mb-1">{t('profile.name')}</label>
             {editing ? <input type="text" value={form.fullName} onChange={e => setForm({...form, fullName: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm" /> : <div className="text-sm">{citizen.fullName}</div>}
           </div>
-          <div><label className="block text-sm font-medium mb-1">Phone Number</label><div className="text-sm text-gray-500">{citizen.phoneNumber}</div></div>
-          <div><label className="block text-sm font-medium mb-1">Email</label>
-            {editing ? <input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm" /> : <div className="text-sm">{citizen.email || 'Not provided'}</div>}
+          <div><label className="block text-sm font-medium mb-1">{t('profile.phone')}</label><div className="text-sm text-gray-500">{citizen.phoneNumber}</div></div>
+          <div><label className="block text-sm font-medium mb-1">{t('profile.email')}</label>
+            {editing ? <input type="email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm" /> : <div className="text-sm">{citizen.email || t('common.optional')}</div>}
           </div>
-          <div><label className="block text-sm font-medium mb-1">National ID</label><div className="text-sm text-gray-500">{citizen.nationalId || 'Not provided'}</div></div>
+          <div><label className="block text-sm font-medium mb-1">National ID</label><div className="text-sm text-gray-500">{citizen.nationalId || t('common.optional')}</div></div>
           <div><label className="block text-sm font-medium mb-1">Gender</label>
-            {editing ? <select value={form.gender} onChange={e => setForm({...form, gender: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm"><option value="">Select</option><option value="Male">Male</option><option value="Female">Female</option></select> : <div className="text-sm">{citizen.gender || 'Not provided'}</div>}
+            {editing ? <select value={form.gender} onChange={e => setForm({...form, gender: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm"><option value="">Select</option><option value="Male">Male</option><option value="Female">Female</option></select> : <div className="text-sm">{citizen.gender || t('common.optional')}</div>}
           </div>
-          <div><label className="block text-sm font-medium mb-1">Address</label>
-            {editing ? <input type="text" value={form.address} onChange={e => setForm({...form, address: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm" /> : <div className="text-sm">{citizen.address || 'Not provided'}</div>}
+          <div><label className="block text-sm font-medium mb-1">{t('profile.address')}</label>
+            {editing ? <input type="text" value={form.address} onChange={e => setForm({...form, address: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm" /> : <div className="text-sm">{citizen.address || t('common.optional')}</div>}
           </div>
-          <div><label className="block text-sm font-medium mb-1">Verification Status</label>
-            <div className={`text-sm font-medium ${citizen.isVerified ? 'text-green-600' : 'text-amber-600'}`}>{citizen.isVerified ? '✓ Verified' : 'Pending Verification'}</div>
+          <div><label className="block text-sm font-medium mb-1">{t('common.status')}</label>
+            <div className={`text-sm font-medium ${citizen.isVerified ? 'text-green-600' : 'text-amber-600'}`}>{citizen.isVerified ? `✓ ${t('status.approved')}` : t('status.pending')}</div>
           </div>
         </div>
         {editing && (
           <div className="flex gap-3 mt-4">
-            <button onClick={handleSave} disabled={saving} className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 disabled:opacity-50">{saving ? 'Saving...' : 'Save Changes'}</button>
-            <button onClick={() => setEditing(false)} className="border px-4 py-2 rounded-lg text-sm hover:bg-gray-50">Cancel</button>
+            <button onClick={handleSave} disabled={saving} className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 disabled:opacity-50">{saving ? t('common.loading') : t('common.save')}</button>
+            <button onClick={() => setEditing(false)} className="border px-4 py-2 rounded-lg text-sm hover:bg-gray-50">{t('common.cancel')}</button>
           </div>
         )}
       </div>
 
       <div className="bg-white border rounded-lg p-6">
-        <h2 className="font-semibold mb-4">Change Password</h2>
+        <h2 className="font-semibold mb-4">{t('profile.changePassword')}</h2>
         <div className="space-y-3">
-          <div><label className="block text-sm font-medium mb-1">Current Password</label><input type="password" value={pwForm.currentPassword} onChange={e => setPwForm({...pwForm, currentPassword: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm" /></div>
-          <div><label className="block text-sm font-medium mb-1">New Password</label><input type="password" value={pwForm.newPassword} onChange={e => setPwForm({...pwForm, newPassword: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm" minLength={6} /></div>
-          <div><label className="block text-sm font-medium mb-1">Confirm New Password</label><input type="password" value={pwForm.confirmPassword} onChange={e => setPwForm({...pwForm, confirmPassword: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm" /></div>
-          <button onClick={handlePassword} disabled={changingPw || !pwForm.currentPassword || !pwForm.newPassword} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50">{changingPw ? 'Changing...' : 'Change Password'}</button>
+          <div><label className="block text-sm font-medium mb-1">{t('auth.password')}</label><input type="password" value={pwForm.currentPassword} onChange={e => setPwForm({...pwForm, currentPassword: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm" /></div>
+          <div><label className="block text-sm font-medium mb-1">{t('auth.password')}</label><input type="password" value={pwForm.newPassword} onChange={e => setPwForm({...pwForm, newPassword: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm" minLength={6} /></div>
+          <div><label className="block text-sm font-medium mb-1">{t('auth.confirmPassword')}</label><input type="password" value={pwForm.confirmPassword} onChange={e => setPwForm({...pwForm, confirmPassword: e.target.value})} className="w-full border rounded-lg px-3 py-2 text-sm" /></div>
+          <button onClick={handlePassword} disabled={changingPw || !pwForm.currentPassword || !pwForm.newPassword} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-700 disabled:opacity-50">{changingPw ? t('auth.loggingIn') : t('profile.changePassword')}</button>
         </div>
       </div>
     </div>

@@ -4,6 +4,7 @@ import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
 import api from '@/lib/api'
 import type { ApplicationDetail, ApiResponse } from '@/types'
+import { useTranslation } from '@/lib/I18nContext'
 
 const statusColors: Record<string, string> = {
   Draft: 'bg-gray-100 text-gray-700', Submitted: 'bg-blue-100 text-blue-700',
@@ -19,6 +20,7 @@ export default function CitizenApplicationDetailPage() {
   const id = params.id as string
   const [app, setApp] = useState<ApplicationDetail | null>(null)
   const [loading, setLoading] = useState(true)
+  const { t } = useTranslation()
 
   useEffect(() => {
     const token = localStorage.getItem('citizenToken')
@@ -28,13 +30,13 @@ export default function CitizenApplicationDetailPage() {
       .finally(() => setLoading(false))
   }, [id, router])
 
-  if (loading) return <div className="text-center py-20 text-gray-500">Loading...</div>
-  if (!app) return <div className="text-center py-20 text-gray-500">Application not found</div>
+  if (loading) return <div className="text-center py-20 text-gray-500">{t('common.loading')}</div>
+  if (!app) return <div className="text-center py-20 text-gray-500">{t('common.error')}</div>
 
   return (
     <div>
       <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-        <Link href="/citizen/applications" className="hover:underline">Applications</Link><span>/</span><span>{app.applicationNumber}</span>
+        <Link href="/citizen/applications" className="hover:underline">{t('citizen.myApplications')}</Link><span>/</span><span>{app.applicationNumber}</span>
       </div>
       <div className="flex items-start justify-between mb-6">
         <div><h1 className="text-2xl font-bold">{app.applicationNumber}</h1><p className="text-gray-500">{app.serviceName}</p></div>
@@ -44,29 +46,29 @@ export default function CitizenApplicationDetailPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <div className="bg-white border rounded-lg p-6">
-            <h2 className="font-semibold mb-4">Details</h2>
+            <h2 className="font-semibold mb-4">{t('common.details')}</h2>
             <div className="grid grid-cols-2 gap-3 text-sm">
-              <div><span className="text-gray-500">Subject:</span> {app.subject}</div>
-              <div><span className="text-gray-500">Priority:</span> {app.priority}</div>
-              <div><span className="text-gray-500">Fee:</span> ETB {app.feeAmount} {app.feePaid ? '(Paid)' : '(Pending)'}</div>
-              <div><span className="text-gray-500">Created:</span> {new Date(app.createdAt).toLocaleDateString()}</div>
-              {app.description && <div className="col-span-2"><span className="text-gray-500">Description:</span> {app.description}</div>}
-              {app.rejectionReason && <div className="col-span-2 text-red-600"><span className="text-gray-500">Rejection:</span> {app.rejectionReason}</div>}
+              <div><span className="text-gray-500">{t('applications.subject')}:</span> {app.subject}</div>
+              <div><span className="text-gray-500">{t('applications.priority')}:</span> {app.priority}</div>
+              <div><span className="text-gray-500">{t('services.fee')}:</span> ETB {app.feeAmount} {app.feePaid ? '(Paid)' : '(Pending)'}</div>
+              <div><span className="text-gray-500">{t('applications.submittedDate')}:</span> {new Date(app.createdAt).toLocaleDateString()}</div>
+              {app.description && <div className="col-span-2"><span className="text-gray-500">{t('applications.description')}:</span> {app.description}</div>}
+              {app.rejectionReason && <div className="col-span-2 text-red-600"><span className="text-gray-500">{t('applications.reject')}:</span> {app.rejectionReason}</div>}
             </div>
           </div>
 
           {(app.reissueReason || app.originalCertificateNumber) && (
             <div className="bg-amber-50 border border-amber-200 rounded-lg p-6">
-              <h2 className="font-semibold text-amber-800 mb-3">Certificate Reissue Details</h2>
+              <h2 className="font-semibold text-amber-800 mb-3">{t('citizen.reissueTitle')}</h2>
               <div className="grid grid-cols-2 gap-3 text-sm">
-                <div><span className="text-gray-500">Reason:</span> <span className="font-medium text-amber-700">{app.reissueReason}</span></div>
-                <div><span className="text-gray-500">Original Cert #:</span> <span className="font-mono">{app.originalCertificateNumber || 'N/A'}</span></div>
-                {app.originalCertificateDetails && <div className="col-span-2"><span className="text-gray-500">Details:</span> {app.originalCertificateDetails}</div>}
+                <div><span className="text-gray-500">{t('applications.reissueReason')}:</span> <span className="font-medium text-amber-700">{app.reissueReason}</span></div>
+                <div><span className="text-gray-500">{t('applications.originalCertNumber')}:</span> <span className="font-mono">{app.originalCertificateNumber || 'N/A'}</span></div>
+                {app.originalCertificateDetails && <div className="col-span-2"><span className="text-gray-500">{t('common.details')}:</span> {app.originalCertificateDetails}</div>}
               </div>
               {app.policeVerifiedAt && (
                 <div className="mt-3 pt-3 border-t border-amber-200 text-sm">
                   <div className={`font-medium ${app.policeApproved ? 'text-green-700' : 'text-red-700'}`}>
-                    Police Verification: {app.policeApproved ? 'Approved' : 'Rejected'}
+                    {t('services.policeVerification')}: {app.policeApproved ? t('status.approved') : t('status.rejected')}
                   </div>
                   {app.policeVerificationNotes && <p className="text-gray-600 mt-1 text-xs">{app.policeVerificationNotes}</p>}
                 </div>
@@ -75,7 +77,7 @@ export default function CitizenApplicationDetailPage() {
           )}
 
           <div className="bg-white border rounded-lg p-6">
-            <h2 className="font-semibold mb-4">Workflow Progress</h2>
+            <h2 className="font-semibold mb-4">{t('applications.workflow')}</h2>
             <div className="space-y-3">
               {app.workflowSteps.map(step => (
                 <div key={step.id} className="flex items-center gap-4">
@@ -103,12 +105,12 @@ export default function CitizenApplicationDetailPage() {
 
           {app.documents.length > 0 && (
             <div className="bg-white border rounded-lg p-6">
-              <h2 className="font-semibold mb-3">Uploaded Documents</h2>
+              <h2 className="font-semibold mb-3">{t('applications.documents')}</h2>
               <div className="space-y-2">
                 {app.documents.map(d => (
                   <div key={d.id} className="flex items-center justify-between p-2 bg-gray-50 rounded text-sm">
                     <div><div className="font-medium">{d.fileName}</div><div className="text-xs text-gray-400">{d.documentType}</div></div>
-                    {d.isVerified && <span className="text-green-600 text-xs">Verified</span>}
+                    {d.isVerified && <span className="text-green-600 text-xs">{t('status.approved')}</span>}
                   </div>
                 ))}
               </div>
@@ -118,7 +120,7 @@ export default function CitizenApplicationDetailPage() {
 
         <div className="space-y-6">
           <div className="bg-white border rounded-lg p-6">
-            <h2 className="font-semibold mb-3">Timeline</h2>
+            <h2 className="font-semibold mb-3">{t('applications.timeline')}</h2>
             <div className="space-y-4">
               {app.stepHistory.map(h => (
                 <div key={h.id} className="text-sm border-l-2 border-gray-200 pl-4">

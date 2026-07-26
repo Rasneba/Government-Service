@@ -4,11 +4,13 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import api from '@/lib/api'
 import type { ApplicationDocument, ApiResponse } from '@/types'
+import { useTranslation } from '@/lib/I18nContext'
 
 export default function CitizenDocumentsPage() {
   const router = useRouter()
   const [documents, setDocuments] = useState<ApplicationDocument[]>([])
   const [loading, setLoading] = useState(true)
+  const { t } = useTranslation()
 
   useEffect(() => {
     const token = localStorage.getItem('citizenToken')
@@ -30,12 +32,12 @@ export default function CitizenDocumentsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">My Documents</h1>
-      {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> : documents.length === 0 ? (
+      <h1 className="text-2xl font-bold mb-6">{t('citizen.myDocuments')}</h1>
+      {loading ? <div className="text-center py-12 text-gray-500">{t('common.loading')}</div> : documents.length === 0 ? (
         <div className="text-center py-12 text-gray-500 bg-white border rounded-lg">
-          <p>No documents uploaded yet.</p>
-          <p className="text-sm mt-2">Documents are uploaded when you submit an application.</p>
-          <Link href="/citizen/services" className="text-green-600 hover:underline text-sm mt-2 inline-block">Browse Services</Link>
+          <p>{t('common.noData')}</p>
+          <p className="text-sm mt-2">{t('citizen.myDocuments')}</p>
+          <Link href="/citizen/services" className="text-green-600 hover:underline text-sm mt-2 inline-block">{t('citizen.applyService')}</Link>
         </div>
       ) : (
         <div className="bg-white border rounded-lg overflow-hidden">
@@ -43,9 +45,9 @@ export default function CitizenDocumentsPage() {
             <thead className="bg-gray-50 border-b"><tr>
               <th className="text-left px-4 py-3 font-medium">File</th>
               <th className="text-left px-4 py-3 font-medium">Type</th>
-              <th className="text-left px-4 py-3 font-medium">Application</th>
-              <th className="text-left px-4 py-3 font-medium">Verified</th>
-              <th className="text-left px-4 py-3 font-medium">Date</th>
+              <th className="text-left px-4 py-3 font-medium">{t('applications.title')}</th>
+              <th className="text-left px-4 py-3 font-medium">{t('status.approved')}</th>
+              <th className="text-left px-4 py-3 font-medium">{t('common.date')}</th>
             </tr></thead>
             <tbody className="divide-y">
               {documents.map(doc => (
@@ -53,7 +55,7 @@ export default function CitizenDocumentsPage() {
                   <td className="px-4 py-3 font-medium">{doc.fileName}</td>
                   <td className="px-4 py-3 text-gray-500">{doc.documentType}</td>
                   <td className="px-4 py-3 text-gray-500">{(doc as any).applicationNumber || '-'}</td>
-                  <td className="px-4 py-3">{doc.isVerified ? <span className="text-green-600">✓ Verified</span> : <span className="text-gray-400">Pending</span>}</td>
+                  <td className="px-4 py-3">{doc.isVerified ? <span className="text-green-600">✓ {t('status.approved')}</span> : <span className="text-gray-400">{t('status.pending')}</span>}</td>
                   <td className="px-4 py-3 text-gray-500">{new Date(doc.uploadedAt).toLocaleDateString()}</td>
                 </tr>
               ))}

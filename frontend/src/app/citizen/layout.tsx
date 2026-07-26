@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Shield, LogOut, Menu, X } from 'lucide-react'
 import { citizenLogout } from '@/lib/auth'
+import LanguageSwitcher from '@/components/common/LanguageSwitcher'
 
 const navItems = [
   { href: '/citizen/dashboard', label: 'Dashboard', icon: '📊' },
@@ -54,7 +55,8 @@ export default function CitizenLayout({ children }: { children: React.ReactNode 
           })}
         </nav>
         <div className="absolute bottom-0 w-full p-3 border-t">
-          <button onClick={citizenLogout} className="flex items-center gap-2 text-gray-500 hover:text-red-600 w-full px-3 py-2 text-sm">
+          <LanguageSwitcher />
+          <button onClick={citizenLogout} className="flex items-center gap-2 text-gray-500 hover:text-red-600 w-full px-3 py-2 text-sm mt-2">
             <LogOut size={16} /> Sign Out
           </button>
         </div>

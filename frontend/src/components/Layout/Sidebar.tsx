@@ -8,27 +8,29 @@ import {
 } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { logout, getStoredUser } from '@/lib/auth'
+import { useTranslation } from '@/lib/I18nContext'
 import type { User } from '@/types'
 
 const menuItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['*'] },
-  { href: '/services', label: 'Services', icon: Briefcase, roles: ['*'] },
-  { href: '/applications', label: 'Applications', icon: FileText, roles: ['*'] },
-  { href: '/letters', label: 'All Letters', icon: Mail, roles: ['*'] },
-  { href: '/letters/new', label: 'New Letter', icon: Mail, roles: ['SystemAdministrator', 'SubCityAdministrator', 'PoliceAdministrator', 'DepartmentOfficer', 'Clerk'] },
-  { href: '/inbox', label: 'Inbox', icon: Inbox, roles: ['*'] },
-  { href: '/outbox', label: 'Outbox', icon: Send, roles: ['*'] },
-  { href: '/search', label: 'Search', icon: Search, roles: ['*'] },
-  { href: '/users', label: 'Users', icon: Users, roles: ['SystemAdministrator', 'SubCityAdministrator'] },
-  { href: '/organizations', label: 'Organizations', icon: Building2, roles: ['SystemAdministrator'] },
-  { href: '/departments', label: 'Departments', icon: Building, roles: ['SystemAdministrator', 'SubCityAdministrator', 'PoliceAdministrator'] },
-  { href: '/police/login', label: 'Police Portal', icon: Shield, roles: ['SystemAdministrator', 'SubCityAdministrator'], external: true },
-  { href: '/citizen/dashboard', label: 'Citizen Portal', icon: UserCheck, roles: ['SystemAdministrator', 'SubCityAdministrator'], external: true },
-  { href: '/reports', label: 'Reports', icon: BarChart3, roles: ['SystemAdministrator', 'SubCityAdministrator', 'PoliceAdministrator'] },
+  { href: '/dashboard', labelKey: 'nav.dashboard', icon: LayoutDashboard, roles: ['*'] },
+  { href: '/services', labelKey: 'nav.services', icon: Briefcase, roles: ['*'] },
+  { href: '/applications', labelKey: 'nav.applications', icon: FileText, roles: ['*'] },
+  { href: '/letters', labelKey: 'nav.allLetters', icon: Mail, roles: ['*'] },
+  { href: '/letters/new', labelKey: 'nav.newLetter', icon: Mail, roles: ['SystemAdministrator', 'SubCityAdministrator', 'PoliceAdministrator', 'DepartmentOfficer', 'Clerk'] },
+  { href: '/inbox', labelKey: 'nav.inbox', icon: Inbox, roles: ['*'] },
+  { href: '/outbox', labelKey: 'nav.outbox', icon: Send, roles: ['*'] },
+  { href: '/search', labelKey: 'nav.search', icon: Search, roles: ['*'] },
+  { href: '/users', labelKey: 'nav.users', icon: Users, roles: ['SystemAdministrator', 'SubCityAdministrator'] },
+  { href: '/organizations', labelKey: 'nav.organizations', icon: Building2, roles: ['SystemAdministrator'] },
+  { href: '/departments', labelKey: 'nav.departments', icon: Building, roles: ['SystemAdministrator', 'SubCityAdministrator', 'PoliceAdministrator'] },
+  { href: '/police/login', labelKey: 'nav.policePortal', icon: Shield, roles: ['SystemAdministrator', 'SubCityAdministrator'], external: true },
+  { href: '/citizen/dashboard', labelKey: 'nav.citizenPortal', icon: UserCheck, roles: ['SystemAdministrator', 'SubCityAdministrator'], external: true },
+  { href: '/reports', labelKey: 'nav.reports', icon: BarChart3, roles: ['SystemAdministrator', 'SubCityAdministrator', 'PoliceAdministrator'] },
 ]
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const { t } = useTranslation()
   const [collapsed, setCollapsed] = useState(false)
   const [user, setUser] = useState<User | null>(null)
 
@@ -61,10 +63,10 @@ export default function Sidebar() {
               className={`flex items-center gap-3 px-3 py-2.5 rounded-lg mb-1 transition-colors ${
                 isActive ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-800'
               }`}
-              title={collapsed ? item.label : undefined}
+              title={collapsed ? t(item.labelKey) : undefined}
             >
               <item.icon size={20} />
-              {!collapsed && <span className="text-sm">{item.label}</span>}
+              {!collapsed && <span className="text-sm">{t(item.labelKey)}</span>}
             </Link>
           )
         })}
@@ -73,13 +75,13 @@ export default function Sidebar() {
       <div className="p-4 border-t border-gray-700">
         {!collapsed && (
           <div className="mb-2">
-            <p className="text-sm font-medium truncate">{user?.fullName || 'Loading...'}</p>
+            <p className="text-sm font-medium truncate">{user?.fullName || t('common.loading')}</p>
             <p className="text-xs text-gray-400 truncate">{user?.role || ''}</p>
           </div>
         )}
         <button onClick={logout} className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors w-full">
           <LogOut size={20} />
-          {!collapsed && <span className="text-sm">Logout</span>}
+          {!collapsed && <span className="text-sm">{t('nav.logout')}</span>}
         </button>
       </div>
     </aside>

@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { login, isAuthenticated } from '@/lib/auth'
 import { Mail, Lock, Loader2 } from 'lucide-react'
+import { useTranslation } from '@/lib/I18nContext'
 
 export default function LoginPage() {
+  const { t } = useTranslation()
   const router = useRouter()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -31,7 +33,7 @@ export default function LoginPage() {
       await login(username, password)
       router.push('/dashboard')
     } catch {
-      setError('Invalid username or password')
+      setError(t('auth.loginFailed'))
     } finally {
       setLoading(false)
     }
@@ -41,8 +43,8 @@ export default function LoginPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md p-8">
         <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Letter Tracking System</h1>
-          <p className="text-gray-500 mt-2">Sub-City & Police Correspondence</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('auth.loginTitle')}</h1>
+          <p className="text-gray-500 mt-2">{t('auth.loginSubtitle')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -51,7 +53,7 @@ export default function LoginPage() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.username')}</label>
             <div className="relative">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input
@@ -66,7 +68,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.password')}</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input
@@ -86,7 +88,7 @@ export default function LoginPage() {
             className="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading && <Loader2 size={18} className="animate-spin" />}
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? t('auth.loggingIn') : t('auth.loginButton')}
           </button>
         </form>
 

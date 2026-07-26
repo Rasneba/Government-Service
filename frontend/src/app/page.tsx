@@ -3,6 +3,8 @@
 import Link from 'next/link'
 import { FileText, Shield, Home, Users, Phone, Mail, MapPin, ChevronRight, Building2, Scale, Heart, Briefcase, Clock, CheckCircle, ArrowRight, Menu, X } from 'lucide-react'
 import { useState } from 'react'
+import LanguageSwitcher from '@/components/common/LanguageSwitcher'
+import { useTranslation } from '@/lib/I18nContext'
 
 const services = [
   { icon: FileText, title: 'Birth Certificate Reissue', desc: 'Replacement for lost or damaged birth certificate', category: 'Certificate Reissue', days: '7 days', fee: '50 Birr', police: true },
@@ -48,6 +50,7 @@ const categoryIcons: Record<string, any> = {
 
 export default function LandingPage() {
   const [mobileMenu, setMobileMenu] = useState(false)
+  const { t } = useTranslation()
 
   return (
     <div className="min-h-screen bg-white">
@@ -68,15 +71,16 @@ export default function LandingPage() {
           </div>
           <nav className="flex items-center justify-between py-3">
             <div className="hidden md:flex items-center gap-6 text-sm">
-              <a href="#services" className="hover:text-green-200">Services</a>
+              <a href="#services" className="hover:text-green-200">{t('nav.services')}</a>
               <a href="#how-it-works" className="hover:text-green-200">How It Works</a>
               <a href="#woredas" className="hover:text-green-200">Woredas</a>
               <a href="#contact" className="hover:text-green-200">Contact</a>
             </div>
             <div className="flex items-center gap-3">
-              <Link href="/login" className="bg-white text-green-700 px-3 py-2 rounded-lg text-sm font-semibold hover:bg-green-50 transition hidden md:inline">Staff</Link>
-              <Link href="/police/login" className="bg-slate-700 border border-slate-500 px-3 py-2 rounded-lg text-sm font-semibold hover:bg-slate-600 transition hidden md:inline">Police</Link>
-              <Link href="/citizen/login" className="bg-green-600 border border-green-400 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-500 transition">Citizen Portal</Link>
+              <Link href="/login" className="bg-white text-green-700 px-3 py-2 rounded-lg text-sm font-semibold hover:bg-green-50 transition hidden md:inline">{t('landing.staffPortal')}</Link>
+              <Link href="/police/login" className="bg-slate-700 border border-slate-500 px-3 py-2 rounded-lg text-sm font-semibold hover:bg-slate-600 transition hidden md:inline">{t('landing.policePortal')}</Link>
+              <Link href="/citizen/login" className="bg-green-600 border border-green-400 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-green-500 transition">{t('landing.citizenPortal')}</Link>
+              <LanguageSwitcher />
               <button className="md:hidden" onClick={() => setMobileMenu(!mobileMenu)}>
                 {mobileMenu ? <X size={24} /> : <Menu size={24} />}
               </button>
@@ -84,13 +88,13 @@ export default function LandingPage() {
           </nav>
           {mobileMenu && (
             <div className="md:hidden pb-4 space-y-2 text-sm">
-              <a href="#services" className="block py-2 hover:text-green-200">Services</a>
+              <a href="#services" className="block py-2 hover:text-green-200">{t('nav.services')}</a>
               <a href="#how-it-works" className="block py-2 hover:text-green-200">How It Works</a>
               <a href="#woredas" className="block py-2 hover:text-green-200">Woredas</a>
               <a href="#contact" className="block py-2 hover:text-green-200">Contact</a>
               <div className="flex gap-2 pt-2 border-t border-green-600">
-                <Link href="/login" className="block bg-white text-green-700 px-3 py-2 rounded text-center flex-1">Staff Login</Link>
-                <Link href="/police/login" className="block bg-slate-700 text-white px-3 py-2 rounded text-center flex-1">Police Login</Link>
+                <Link href="/login" className="block bg-white text-green-700 px-3 py-2 rounded text-center flex-1">{t('landing.staffPortal')}</Link>
+                <Link href="/police/login" className="block bg-slate-700 text-white px-3 py-2 rounded text-center flex-1">{t('landing.policePortal')}</Link>
               </div>
             </div>
           )}
@@ -103,11 +107,10 @@ export default function LandingPage() {
             Addis Ababa Civil Registration & Residency Service Agency
           </div>
           <h1 className="text-3xl md:text-5xl font-bold mb-4 leading-tight">
-            Certificate Reissue &<br />Government Digital Services
+            {t('landing.title')}
           </h1>
           <p className="text-lg md:text-xl text-green-200 mb-8 max-w-2xl mx-auto">
-            Lost your certificate? Apply for reissue online. Police verification included.
-            Track your application in real-time.
+            {t('landing.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/citizen/register" className="bg-white text-green-700 px-8 py-3 rounded-lg font-bold text-lg hover:bg-green-50 transition inline-flex items-center justify-center gap-2">
@@ -122,7 +125,7 @@ export default function LandingPage() {
 
       <section className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 py-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-          <div><div className="text-3xl font-bold text-green-700">12</div><div className="text-sm text-gray-500">Online Services</div></div>
+          <div><div className="text-3xl font-bold text-green-700">12</div><div className="text-sm text-gray-500">{t('nav.services')}</div></div>
           <div><div className="text-3xl font-bold text-green-700">10</div><div className="text-sm text-gray-500">Woredas</div></div>
           <div><div className="text-3xl font-bold text-green-700">6</div><div className="text-sm text-gray-500">Workflow Steps</div></div>
           <div><div className="text-3xl font-bold text-green-700">24/7</div><div className="text-sm text-gray-500">Online Access</div></div>
@@ -215,7 +218,7 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="bg-white border rounded-xl p-8">
-              <h3 className="font-bold text-lg mb-4">Certificates We Reissue</h3>
+              <h3 className="font-bold text-lg mb-4">{t('landing.about')}</h3>
               <div className="space-y-3">
                 {['Birth Certificate', 'Marriage Certificate', 'Family Record Certificate', 'Land Ownership Certificate', 'Divorce Certificate', 'Death Certificate'].map((s, i) => (
                   <div key={i} className="flex items-center gap-3 text-sm">
@@ -268,9 +271,9 @@ export default function LandingPage() {
                 <a href="#services" className="block hover:text-white">Certificate Reissue Services</a>
                 <a href="#woredas" className="block hover:text-white">Woreda Directory</a>
                 <Link href="/citizen/register" className="block hover:text-white">Register for Reissue</Link>
-                <Link href="/citizen/login" className="block hover:text-white">Citizen Portal</Link>
-                <Link href="/police/login" className="block hover:text-white">Police Verification Portal</Link>
-                <Link href="/login" className="block hover:text-white">Staff Portal</Link>
+                <Link href="/citizen/login" className="block hover:text-white">{t('landing.citizenPortal')}</Link>
+                <Link href="/police/login" className="block hover:text-white">{t('landing.policePortal')}</Link>
+                <Link href="/login" className="block hover:text-white">{t('landing.staffPortal')}</Link>
               </div>
             </div>
             <div>

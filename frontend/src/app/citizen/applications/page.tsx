@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import api from '@/lib/api'
 import type { ApplicationListItem, PagedResult, ApiResponse } from '@/types'
+import { useTranslation } from '@/lib/I18nContext'
 
 const statusColors: Record<string, string> = {
   Draft: 'bg-gray-100 text-gray-700', Submitted: 'bg-blue-100 text-blue-700',
@@ -18,6 +19,7 @@ export default function CitizenApplicationsPage() {
   const router = useRouter()
   const [apps, setApps] = useState<ApplicationListItem[]>([])
   const [loading, setLoading] = useState(true)
+  const { t } = useTranslation()
 
   useEffect(() => {
     const token = localStorage.getItem('citizenToken')
@@ -31,26 +33,26 @@ export default function CitizenApplicationsPage() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold">My Applications</h1>
-          <p className="text-sm text-gray-500 mt-1">Track your certificate reissue and service applications</p>
+          <h1 className="text-2xl font-bold">{t('citizen.myApplications')}</h1>
+          <p className="text-sm text-gray-500 mt-1">{t('citizen.trackApplication')}</p>
         </div>
-        <Link href="/citizen/applications/new" className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700">New Reissue Request</Link>
+        <Link href="/citizen/applications/new" className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700">{t('citizen.submitRequest')}</Link>
       </div>
-      {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> : apps.length === 0 ? (
+      {loading ? <div className="text-center py-12 text-gray-500">{t('common.loading')}</div> : apps.length === 0 ? (
         <div className="text-center py-12 text-gray-500 bg-white border rounded-lg">
-          <p className="mb-2">No applications yet</p>
-          <Link href="/citizen/applications/new" className="text-green-600 hover:underline">Apply for certificate reissue</Link>
+          <p className="mb-2">{t('common.noData')}</p>
+          <Link href="/citizen/applications/new" className="text-green-600 hover:underline">{t('citizen.applyService')}</Link>
         </div>
       ) : (
         <div className="bg-white border rounded-lg overflow-hidden">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b"><tr>
-              <th className="text-left px-4 py-3 font-medium">Application #</th>
-              <th className="text-left px-4 py-3 font-medium">Service</th>
-              <th className="text-left px-4 py-3 font-medium">Reason</th>
-              <th className="text-left px-4 py-3 font-medium">Status</th>
-              <th className="text-left px-4 py-3 font-medium">Step</th>
-              <th className="text-left px-4 py-3 font-medium">Date</th>
+              <th className="text-left px-4 py-3 font-medium">{t('applications.applicationNumber')}</th>
+              <th className="text-left px-4 py-3 font-medium">{t('applications.serviceType')}</th>
+              <th className="text-left px-4 py-3 font-medium">{t('applications.reissueReason')}</th>
+              <th className="text-left px-4 py-3 font-medium">{t('common.status')}</th>
+              <th className="text-left px-4 py-3 font-medium">{t('applications.currentStep')}</th>
+              <th className="text-left px-4 py-3 font-medium">{t('common.date')}</th>
             </tr></thead>
             <tbody className="divide-y">
               {apps.map(app => (

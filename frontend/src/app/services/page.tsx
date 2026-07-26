@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react'
 import Layout from '@/components/Layout/Layout'
 import api from '@/lib/api'
 import type { ServiceCategory, ServiceType, ApiResponse } from '@/types'
+import { useTranslation } from '@/lib/I18nContext'
 
 export default function ServicesPage() {
+  const { t } = useTranslation()
   const [categories, setCategories] = useState<ServiceCategory[]>([])
   const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([])
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null)
@@ -46,7 +48,7 @@ export default function ServicesPage() {
   return (
     <Layout>
       <div className="p-6">
-        <h1 className="text-2xl font-bold mb-6">Government Services</h1>
+        <h1 className="text-2xl font-bold mb-6">{t('services.title')}</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
           <button
@@ -57,7 +59,7 @@ export default function ServicesPage() {
                 : 'border-gray-200 hover:border-gray-300'
             }`}
           >
-            <div className="text-sm font-medium">All Services</div>
+            <div className="text-sm font-medium">{t('services.viewAll')}</div>
             <div className="text-xs text-gray-500 mt-1">{serviceTypes.length} available</div>
           </button>
           {categories.map((cat) => (
@@ -77,7 +79,7 @@ export default function ServicesPage() {
         </div>
 
         {loading ? (
-          <div className="text-center py-12 text-gray-500">Loading services...</div>
+          <div className="text-center py-12 text-gray-500">{t('common.loading')}</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {serviceTypes.map((st) => (
@@ -89,26 +91,26 @@ export default function ServicesPage() {
                 <p className="text-sm text-gray-600 mb-4">{st.description || 'No description'}</p>
                 <div className="space-y-1 text-sm text-gray-500">
                   <div className="flex justify-between">
-                    <span>Category:</span>
+                    <span>{t('services.categories')}:</span>
                     <span>{st.categoryName || 'Uncategorized'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Processing Time:</span>
+                    <span>{t('services.estimatedDays')}:</span>
                     <span>{st.estimatedDays ? `${st.estimatedDays} days` : 'Varies'}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Fee:</span>
+                    <span>{t('services.fee')}:</span>
                     <span className="font-medium">{st.fee > 0 ? `ETB ${st.fee.toLocaleString()}` : 'Free'}</span>
                   </div>
                   {st.requiresPoliceVerification && (
-                    <div className="text-amber-600 text-xs mt-2">Requires police verification</div>
+                    <div className="text-amber-600 text-xs mt-2">{t('services.policeVerification')}</div>
                   )}
                 </div>
                 <a
                   href={`/applications/new?serviceTypeId=${st.id}`}
                   className="mt-4 block w-full text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
                 >
-                  Apply Now
+                  {t('services.applyNow')}
                 </a>
               </div>
             ))}

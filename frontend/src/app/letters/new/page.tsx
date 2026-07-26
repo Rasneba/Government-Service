@@ -7,8 +7,10 @@ import { isAuthenticated, getStoredUser } from '@/lib/auth'
 import api from '@/lib/api'
 import { User, Department } from '@/types'
 import { Loader2 } from 'lucide-react'
+import { useTranslation } from '@/lib/I18nContext'
 
 export default function NewLetterPage() {
+  const { t } = useTranslation()
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [users, setUsers] = useState<User[]>([])
@@ -47,34 +49,34 @@ export default function NewLetterPage() {
       if (form.dueDate) payload.dueDate = form.dueDate
       const res = await api.post('/letters', payload)
       router.push(`/letters/${res.data.data.id}`)
-    } catch (err: any) { alert(err.response?.data?.message || 'Failed to create letter') } finally { setLoading(false) }
+    } catch (err: any) { alert(err.response?.data?.message || t('common.error')) } finally { setLoading(false) }
   }
 
-  if (!mounted) return <Layout><div className="flex items-center justify-center h-64 text-gray-500">Loading...</div></Layout>
+  if (!mounted) return <Layout><div className="flex items-center justify-center h-64 text-gray-500">{t('common.loading')}</div></Layout>
 
   return (
     <Layout>
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Create New Letter</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">{t('letters.newLetter')}</h1>
       <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 max-w-3xl">
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-1">Letter Type</label>
           <div className="flex gap-4">
-            <label className="flex items-center gap-2"><input type="radio" checked={!form.isIncoming} onChange={() => setForm({ ...form, isIncoming: false })} /> Outgoing</label>
-            <label className="flex items-center gap-2"><input type="radio" checked={form.isIncoming} onChange={() => setForm({ ...form, isIncoming: true })} /> Incoming</label>
+            <label className="flex items-center gap-2"><input type="radio" checked={!form.isIncoming} onChange={() => setForm({ ...form, isIncoming: false })} /> {t('letters.outgoing')}</label>
+            <label className="flex items-center gap-2"><input type="radio" checked={form.isIncoming} onChange={() => setForm({ ...form, isIncoming: true })} /> {t('letters.incoming')}</label>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">Subject *</label>
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">{t('letters.subject')} *</label>
             <input type="text" value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required /></div>
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">{t('applications.priority')}</label>
             <select value={form.priority} onChange={(e) => setForm({ ...form, priority: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none">
-              <option value="Low">Low</option><option value="Normal">Normal</option><option value="High">High</option><option value="Urgent">Urgent</option>
+              <option value="Low">{t('priority.low')}</option><option value="Normal">{t('priority.normal')}</option><option value="High">{t('priority.high')}</option><option value="Urgent">{t('priority.urgent')}</option>
             </select></div>
         </div>
         <div className="mb-4"><label className="block text-sm font-medium text-gray-700 mb-1">Body *</label>
           <textarea value={form.body} onChange={(e) => setForm({ ...form, body: e.target.value })} rows={6} className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" required /></div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div><label className="block text-sm font-medium text-gray-700 mb-1">Receiver</label>
+          <div><label className="block text-sm font-medium text-gray-700 mb-1">{t('letters.recipient')}</label>
             <select value={form.receiverId} onChange={(e) => setForm({ ...form, receiverId: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none">
               <option value="">Select user</option>
               {users.filter((u) => u.id !== currentUser?.id).map((u) => (<option key={u.id} value={u.id}>{u.fullName} ({u.departmentName || 'N/A'})</option>))}
@@ -87,7 +89,7 @@ export default function NewLetterPage() {
         </div>
         {(form.isIncoming || form.citizenName || form.caseNumber) && (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 p-4 bg-gray-50 rounded-lg">
-            <div><label className="block text-sm font-medium text-gray-700 mb-1">Citizen Name</label>
+            <div><label className="block text-sm font-medium text-gray-700 mb-1">{t('applications.citizen')} Name</label>
               <input type="text" value={form.citizenName} onChange={(e) => setForm({ ...form, citizenName: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" /></div>
             <div><label className="block text-sm font-medium text-gray-700 mb-1">Case Number</label>
               <input type="text" value={form.caseNumber} onChange={(e) => setForm({ ...form, caseNumber: e.target.value })} className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 outline-none" /></div>
@@ -96,9 +98,9 @@ export default function NewLetterPage() {
           </div>
         )}
         <div className="flex justify-end gap-3">
-          <button type="button" onClick={() => router.back()} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
+          <button type="button" onClick={() => router.back()} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">{t('common.cancel')}</button>
           <button type="submit" disabled={loading} className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2">
-            {loading && <Loader2 size={18} className="animate-spin" />} {loading ? 'Creating...' : 'Create Letter'}
+            {loading && <Loader2 size={18} className="animate-spin" />} {loading ? t('applications.creating') : t('letters.newLetter')}
           </button>
         </div>
       </form>

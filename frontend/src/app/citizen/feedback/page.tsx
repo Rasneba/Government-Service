@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import api from '@/lib/api'
 import type { FeedbackDto, ApiResponse } from '@/types'
+import { useTranslation } from '@/lib/I18nContext'
 
 export default function CitizenFeedbackPage() {
   const router = useRouter()
@@ -14,6 +15,7 @@ export default function CitizenFeedbackPage() {
   const [subject, setSubject] = useState('')
   const [message, setMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const { t } = useTranslation()
 
   useEffect(() => {
     const token = localStorage.getItem('citizenToken')
@@ -38,17 +40,17 @@ export default function CitizenFeedbackPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">My Feedback</h1>
-        <button onClick={() => setShowForm(!showForm)} className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700">{showForm ? 'Cancel' : 'Give Feedback'}</button>
+        <h1 className="text-2xl font-bold">{t('citizen.feedback')}</h1>
+        <button onClick={() => setShowForm(!showForm)} className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700">{showForm ? t('common.cancel') : t('citizen.feedback')}</button>
       </div>
 
       {showForm && (
         <form onSubmit={handleSubmit} className="bg-white border rounded-lg p-6 mb-6 space-y-4">
           <div className="grid grid-cols-2 gap-4">
-            <div><label className="block text-sm font-medium mb-1">Feedback Type</label><select value={type} onChange={e => setType(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm">
+            <div><label className="block text-sm font-medium mb-1">{t('citizen.feedback')}</label><select value={type} onChange={e => setType(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm">
               <option value="ServiceRating">Service Rating</option><option value="WebsiteExperience">Website Experience</option><option value="StaffPerformance">Staff Performance</option><option value="Suggestion">Suggestion</option>
             </select></div>
-            <div><label className="block text-sm font-medium mb-1">Rating *</label>
+            <div><label className="block text-sm font-medium mb-1">{t('common.status')} *</label>
               <div className="flex gap-1 mt-1">
                 {[1,2,3,4,5].map(n => (
                   <button key={n} type="button" onClick={() => setRating(n)} className={`text-2xl ${n <= rating ? 'text-yellow-400' : 'text-gray-300'}`}>★</button>
@@ -56,14 +58,14 @@ export default function CitizenFeedbackPage() {
               </div>
             </div>
           </div>
-          <div><label className="block text-sm font-medium mb-1">Subject</label><input type="text" value={subject} onChange={e => setSubject(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm" /></div>
-          <div><label className="block text-sm font-medium mb-1">Message</label><textarea value={message} onChange={e => setMessage(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm" rows={4} /></div>
-          <button type="submit" disabled={submitting} className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 disabled:opacity-50">{submitting ? 'Submitting...' : 'Submit Feedback'}</button>
+          <div><label className="block text-sm font-medium mb-1">{t('applications.subject')}</label><input type="text" value={subject} onChange={e => setSubject(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm" /></div>
+          <div><label className="block text-sm font-medium mb-1">{t('applications.description')}</label><textarea value={message} onChange={e => setMessage(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm" rows={4} /></div>
+          <button type="submit" disabled={submitting} className="bg-green-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-700 disabled:opacity-50">{submitting ? t('applications.creating') : t('citizen.feedback')}</button>
         </form>
       )}
 
-      {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> : feedbackList.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 bg-white border rounded-lg">No feedback submitted yet</div>
+      {loading ? <div className="text-center py-12 text-gray-500">{t('common.loading')}</div> : feedbackList.length === 0 ? (
+        <div className="text-center py-12 text-gray-500 bg-white border rounded-lg">{t('common.noData')}</div>
       ) : (
         <div className="space-y-3">
           {feedbackList.map(f => (

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import api from '@/lib/api'
 import type { CitizenNotificationDto, ApiResponse } from '@/types'
+import { useTranslation } from '@/lib/I18nContext'
 
 const typeColors: Record<string, string> = {
   Info: 'bg-blue-100 text-blue-700', Success: 'bg-green-100 text-green-700',
@@ -14,6 +15,7 @@ export default function CitizenNotificationsPage() {
   const [notifications, setNotifications] = useState<CitizenNotificationDto[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'unread'>('all')
+  const { t } = useTranslation()
 
   useEffect(() => {
     const token = localStorage.getItem('citizenToken')
@@ -44,17 +46,17 @@ export default function CitizenNotificationsPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Notifications</h1>
-        <button onClick={markAllRead} className="text-sm text-green-600 hover:underline">Mark all as read</button>
+        <h1 className="text-2xl font-bold">{t('notifications.title')}</h1>
+        <button onClick={markAllRead} className="text-sm text-green-600 hover:underline">{t('notifications.markAllRead')}</button>
       </div>
 
       <div className="flex gap-2 mb-4">
-        <button onClick={() => setFilter('all')} className={`px-4 py-2 rounded-full text-sm ${filter === 'all' ? 'bg-green-600 text-white' : 'bg-white border'}`}>All</button>
-        <button onClick={() => setFilter('unread')} className={`px-4 py-2 rounded-full text-sm ${filter === 'unread' ? 'bg-green-600 text-white' : 'bg-white border'}`}>Unread</button>
+        <button onClick={() => setFilter('all')} className={`px-4 py-2 rounded-full text-sm ${filter === 'all' ? 'bg-green-600 text-white' : 'bg-white border'}`}>{t('common.all')}</button>
+        <button onClick={() => setFilter('unread')} className={`px-4 py-2 rounded-full text-sm ${filter === 'unread' ? 'bg-green-600 text-white' : 'bg-white border'}`}>{t('notifications.unread')}</button>
       </div>
 
-      {loading ? <div className="text-center py-12 text-gray-500">Loading...</div> : notifications.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 bg-white border rounded-lg">No notifications</div>
+      {loading ? <div className="text-center py-12 text-gray-500">{t('common.loading')}</div> : notifications.length === 0 ? (
+        <div className="text-center py-12 text-gray-500 bg-white border rounded-lg">{t('notifications.noNotifications')}</div>
       ) : (
         <div className="space-y-2">
           {notifications.map(n => (

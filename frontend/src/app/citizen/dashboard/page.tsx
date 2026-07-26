@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import api from '@/lib/api'
 import type { Citizen, ApplicationListItem, PagedResult, ApiResponse, CitizenNotificationDto } from '@/types'
+import { useTranslation } from '@/lib/I18nContext'
 
 const statusColors: Record<string, string> = {
   Draft: 'bg-gray-100 text-gray-700', Submitted: 'bg-blue-100 text-blue-700',
@@ -21,6 +22,7 @@ export default function CitizenDashboardPage() {
   const [applications, setApplications] = useState<ApplicationListItem[]>([])
   const [notifications, setNotifications] = useState<CitizenNotificationDto[]>([])
   const [loading, setLoading] = useState(true)
+  const { t } = useTranslation()
 
   useEffect(() => {
     const token = localStorage.getItem('citizenToken')
@@ -44,38 +46,38 @@ export default function CitizenDashboardPage() {
     } finally { setLoading(false) }
   }
 
-  if (loading) return <div className="text-center py-20 text-gray-500">Loading...</div>
+  if (loading) return <div className="text-center py-20 text-gray-500">{t('common.loading')}</div>
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Welcome, {citizen?.fullName}</h1>
+      <h1 className="text-2xl font-bold mb-6">{t('citizen.welcome', { name: citizen?.fullName || '' })}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <Link href="/citizen/applications" className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow">
           <div className="text-2xl font-bold text-blue-600">{citizen?.activeApplications || 0}</div>
-          <div className="text-sm text-gray-500">Active Applications</div>
+          <div className="text-sm text-gray-500">{t('citizen.activeApplications')}</div>
         </Link>
         <Link href="/citizen/applications" className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow">
           <div className="text-2xl font-bold text-green-600">{citizen?.completedApplications || 0}</div>
-          <div className="text-sm text-gray-500">Completed</div>
+          <div className="text-sm text-gray-500">{t('citizen.completedApplications')}</div>
         </Link>
         <Link href="/citizen/notifications" className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow">
           <div className="text-2xl font-bold text-amber-600">{notifications.length}</div>
-          <div className="text-sm text-gray-500">Unread Notifications</div>
+          <div className="text-sm text-gray-500">{t('notifications.unread')}</div>
         </Link>
         <Link href="/citizen/services" className="bg-white border rounded-lg p-4 hover:shadow-md transition-shadow">
           <div className="text-2xl font-bold text-purple-600">🏛️</div>
-          <div className="text-sm text-gray-500">Browse Services</div>
+          <div className="text-sm text-gray-500">{t('citizen.applyService')}</div>
         </Link>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white border rounded-lg p-6">
-          <h2 className="font-semibold mb-4">Recent Applications</h2>
+          <h2 className="font-semibold mb-4">{t('citizen.myApplications')}</h2>
           {applications.length === 0 ? (
             <div className="text-center py-6 text-gray-500">
-              <p>No applications yet</p>
-              <Link href="/citizen/services" className="text-green-600 hover:underline text-sm">Start your first application</Link>
+              <p>{t('common.noData')}</p>
+              <Link href="/citizen/services" className="text-green-600 hover:underline text-sm">{t('citizen.applyService')}</Link>
             </div>
           ) : (
             <div className="space-y-3">
@@ -95,14 +97,14 @@ export default function CitizenDashboardPage() {
         </div>
 
         <div className="bg-white border rounded-lg p-6">
-          <h2 className="font-semibold mb-4">Quick Actions</h2>
+          <h2 className="font-semibold mb-4">{t('citizen.quickActions')}</h2>
           <div className="grid grid-cols-2 gap-3">
-            <Link href="/citizen/services" className="p-4 border rounded-lg hover:bg-green-50 text-center text-sm font-medium">🏛️ Browse Services</Link>
-            <Link href="/citizen/appointments" className="p-4 border rounded-lg hover:bg-green-50 text-center text-sm font-medium">📅 Book Appointment</Link>
-            <Link href="/citizen/complaints" className="p-4 border rounded-lg hover:bg-green-50 text-center text-sm font-medium">⚠️ Submit Complaint</Link>
-            <Link href="/citizen/feedback" className="p-4 border rounded-lg hover:bg-green-50 text-center text-sm font-medium">⭐ Give Feedback</Link>
-            <Link href="/citizen/documents" className="p-4 border rounded-lg hover:bg-green-50 text-center text-sm font-medium">📄 My Documents</Link>
-            <Link href="/citizen/profile" className="p-4 border rounded-lg hover:bg-green-50 text-center text-sm font-medium">👤 My Profile</Link>
+            <Link href="/citizen/services" className="p-4 border rounded-lg hover:bg-green-50 text-center text-sm font-medium">🏛️ {t('citizen.applyService')}</Link>
+            <Link href="/citizen/appointments" className="p-4 border rounded-lg hover:bg-green-50 text-center text-sm font-medium">📅 {t('citizen.appointments')}</Link>
+            <Link href="/citizen/complaints" className="p-4 border rounded-lg hover:bg-green-50 text-center text-sm font-medium">⚠️ {t('citizen.submitComplaint')}</Link>
+            <Link href="/citizen/feedback" className="p-4 border rounded-lg hover:bg-green-50 text-center text-sm font-medium">⭐ {t('citizen.feedback')}</Link>
+            <Link href="/citizen/documents" className="p-4 border rounded-lg hover:bg-green-50 text-center text-sm font-medium">📄 {t('citizen.myDocuments')}</Link>
+            <Link href="/citizen/profile" className="p-4 border rounded-lg hover:bg-green-50 text-center text-sm font-medium">👤 {t('profile.title')}</Link>
           </div>
         </div>
       </div>

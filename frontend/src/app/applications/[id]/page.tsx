@@ -6,6 +6,7 @@ import Link from 'next/link'
 import Layout from '@/components/Layout/Layout'
 import api from '@/lib/api'
 import type { ApplicationDetail, ApiResponse } from '@/types'
+import { useTranslation } from '@/lib/I18nContext'
 
 const statusColors: Record<string, string> = {
   Draft: 'bg-gray-100 text-gray-700',
@@ -30,6 +31,7 @@ const stepStatusColors: Record<string, string> = {
 }
 
 export default function ApplicationDetailPage() {
+  const { t } = useTranslation()
   const params = useParams()
   const id = params.id as string
   const [application, setApplication] = useState<ApplicationDetail | null>(null)
@@ -71,8 +73,8 @@ export default function ApplicationDetailPage() {
     } catch (err) { console.error(err) } finally { setAddingNote(false) }
   }
 
-  if (loading) return <Layout><div className="p-6 text-center text-gray-500">Loading...</div></Layout>
-  if (!application) return <Layout><div className="p-6 text-center text-gray-500">Application not found</div></Layout>
+  if (loading) return <Layout><div className="p-6 text-center text-gray-500">{t('common.loading')}</div></Layout>
+  if (!application) return <Layout><div className="p-6 text-center text-gray-500">{t('common.noData')}</div></Layout>
 
   const isPoliceStep = application.currentStepName === 'Police Verification'
 
@@ -80,7 +82,7 @@ export default function ApplicationDetailPage() {
     <Layout>
       <div className="p-6">
         <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
-          <Link href="/applications" className="hover:underline">Applications</Link><span>/</span><span>{application.applicationNumber}</span>
+          <Link href="/applications" className="hover:underline">{t('nav.applications')}</Link><span>/</span><span>{application.applicationNumber}</span>
         </div>
 
         <div className="flex items-start justify-between mb-6">
@@ -94,32 +96,32 @@ export default function ApplicationDetailPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white border rounded-lg p-6">
-              <h2 className="font-semibold mb-4">Application Details</h2>
+              <h2 className="font-semibold mb-4">{t('common.details')}</h2>
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div><span className="text-gray-500">Citizen:</span> {application.citizenName}</div>
-                <div><span className="text-gray-500">Phone:</span> {application.citizenPhone}</div>
-                <div><span className="text-gray-500">Priority:</span> {application.priority}</div>
-                <div><span className="text-gray-500">Fee:</span> ETB {application.feeAmount.toLocaleString()} {application.feePaid ? '(Paid)' : '(Unpaid)'}</div>
-                <div className="col-span-2"><span className="text-gray-500">Subject:</span> {application.subject}</div>
-                {application.description && <div className="col-span-2"><span className="text-gray-500">Description:</span> {application.description}</div>}
+                <div><span className="text-gray-500">{t('applications.citizen')}:</span> {application.citizenName}</div>
+                <div><span className="text-gray-500">{t('profile.phone')}:</span> {application.citizenPhone}</div>
+                <div><span className="text-gray-500">{t('applications.priority')}:</span> {application.priority}</div>
+                <div><span className="text-gray-500">{t('services.fee')}:</span> ETB {application.feeAmount.toLocaleString()} {application.feePaid ? '(Paid)' : '(Unpaid)'}</div>
+                <div className="col-span-2"><span className="text-gray-500">{t('applications.subject')}:</span> {application.subject}</div>
+                {application.description && <div className="col-span-2"><span className="text-gray-500">{t('applications.description')}:</span> {application.description}</div>}
                 {application.rejectionReason && <div className="col-span-2 text-red-600"><span className="text-gray-500">Rejection Reason:</span> {application.rejectionReason}</div>}
               </div>
             </div>
 
             {(application.reissueReason || application.originalCertificateNumber) && (
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-6">
-                <h2 className="font-semibold text-amber-800 mb-3">Reissue / Lost Certificate Details</h2>
+                <h2 className="font-semibold text-amber-800 mb-3">{t('applications.originalCertDetails')}</h2>
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div><span className="text-gray-500">Reason:</span> <span className="font-medium text-amber-700">{application.reissueReason}</span></div>
-                  <div><span className="text-gray-500">Original Cert #:</span> <span className="font-mono font-medium">{application.originalCertificateNumber || 'N/A'}</span></div>
+                  <div><span className="text-gray-500">{t('applications.reissueReason')}:</span> <span className="font-medium text-amber-700">{application.reissueReason}</span></div>
+                  <div><span className="text-gray-500">{t('applications.originalCertNumber')}:</span> <span className="font-mono font-medium">{application.originalCertificateNumber || 'N/A'}</span></div>
                   {application.originalCertificateDetails && (
-                    <div className="col-span-2"><span className="text-gray-500">Details:</span><p className="mt-1 text-gray-700 bg-white p-3 rounded border">{application.originalCertificateDetails}</p></div>
+                    <div className="col-span-2"><span className="text-gray-500">{t('common.details')}:</span><p className="mt-1 text-gray-700 bg-white p-3 rounded border">{application.originalCertificateDetails}</p></div>
                   )}
                 </div>
                 {application.policeVerifiedAt && (
                   <div className="mt-4 pt-3 border-t border-amber-200">
                     <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div><span className="text-gray-500">Police Status:</span> <span className={`font-medium ${application.policeApproved ? 'text-green-700' : 'text-red-700'}`}>{application.policeApproved ? 'Approved' : 'Rejected'}</span></div>
+                      <div><span className="text-gray-500">Police Status:</span> <span className={`font-medium ${application.policeApproved ? 'text-green-700' : 'text-red-700'}`}>{application.policeApproved ? t('status.approved') : t('status.rejected')}</span></div>
                       <div><span className="text-gray-500">Verified:</span> {new Date(application.policeVerifiedAt).toLocaleString()}</div>
                     </div>
                     {application.policeVerificationNotes && (
@@ -131,7 +133,7 @@ export default function ApplicationDetailPage() {
             )}
 
             <div className="bg-white border rounded-lg p-6">
-              <h2 className="font-semibold mb-4">Workflow Progress</h2>
+              <h2 className="font-semibold mb-4">{t('applications.workflow')}</h2>
               <div className="space-y-3">
                 {application.workflowSteps.map((step) => (
                   <div key={step.id} className="flex items-center gap-4">
@@ -156,7 +158,7 @@ export default function ApplicationDetailPage() {
 
             {application.notes.length > 0 && (
               <div className="bg-white border rounded-lg p-6">
-                <h2 className="font-semibold mb-4">Notes</h2>
+                <h2 className="font-semibold mb-4">{t('applications.notes')}</h2>
                 <div className="space-y-3">
                   {application.notes.map((note) => (
                     <div key={note.id} className={`p-3 rounded text-sm ${note.isInternal ? 'bg-yellow-50 border border-yellow-200' : 'bg-gray-50'}`}>
@@ -173,14 +175,14 @@ export default function ApplicationDetailPage() {
             )}
 
             <div className="bg-white border rounded-lg p-6">
-              <h2 className="font-semibold mb-3">Add Note</h2>
+              <h2 className="font-semibold mb-3">{t('applications.addNote')}</h2>
               <textarea value={noteText} onChange={(e) => setNoteText(e.target.value)} className="w-full border rounded-lg px-3 py-2 text-sm mb-3" rows={3} placeholder="Type a note..." />
               <div className="flex gap-2">
-                <button onClick={handleAddNote} disabled={!noteText.trim() || addingNote} className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 disabled:opacity-50">Add Note</button>
+                <button onClick={handleAddNote} disabled={!noteText.trim() || addingNote} className="bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700 disabled:opacity-50">{t('applications.addNote')}</button>
                 {application.status !== 'Completed' && application.status !== 'Cancelled' && application.status !== 'Rejected' && !isPoliceStep && (
                   <>
-                    <button onClick={handleAdvanceStep} className="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700">Advance Step</button>
-                    <button onClick={handleRejectStep} className="bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700">Reject</button>
+                    <button onClick={handleAdvanceStep} className="bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700">{t('applications.advance')}</button>
+                    <button onClick={handleRejectStep} className="bg-red-600 text-white px-4 py-2 rounded text-sm hover:bg-red-700">{t('applications.reject')}</button>
                   </>
                 )}
                 {isPoliceStep && (
@@ -194,7 +196,7 @@ export default function ApplicationDetailPage() {
 
           <div className="space-y-6">
             <div className="bg-white border rounded-lg p-6">
-              <h2 className="font-semibold mb-4">Timeline</h2>
+              <h2 className="font-semibold mb-4">{t('applications.timeline')}</h2>
               <div className="space-y-4">
                 {application.stepHistory.map((h) => (
                   <div key={h.id} className="text-sm border-l-2 border-gray-200 pl-4">
@@ -211,7 +213,7 @@ export default function ApplicationDetailPage() {
 
             {application.documents.length > 0 && (
               <div className="bg-white border rounded-lg p-6">
-                <h2 className="font-semibold mb-4">Documents</h2>
+                <h2 className="font-semibold mb-4">{t('applications.documents')}</h2>
                 <div className="space-y-2">
                   {application.documents.map((doc) => (
                     <div key={doc.id} className="flex items-center justify-between text-sm p-2 bg-gray-50 rounded">

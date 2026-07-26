@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react'
 import api from '@/lib/api'
 import { Notification } from '@/types'
 import Link from 'next/link'
+import LanguageSwitcher from '@/components/common/LanguageSwitcher'
 
 export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
   const [notifications, setNotifications] = useState<Notification[]>([])
@@ -43,6 +44,9 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
 
       <div className="flex-1" />
 
+      <div className="flex items-center gap-2">
+        <LanguageSwitcher />
+
       <div className="relative">
         <button
           onClick={() => setShowNotifications(!showNotifications)}
@@ -78,6 +82,7 @@ export default function Header({ onMenuClick }: { onMenuClick: () => void }) {
             )}
           </div>
         )}
+      </div>
       </div>
     </header>
   )

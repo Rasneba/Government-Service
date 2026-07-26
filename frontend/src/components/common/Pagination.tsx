@@ -1,4 +1,5 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { useTranslation } from '@/lib/I18nContext'
 
 interface PaginationProps {
   page: number
@@ -7,12 +8,14 @@ interface PaginationProps {
 }
 
 export default function Pagination({ page, totalPages, onPageChange }: PaginationProps) {
+  const { t } = useTranslation()
+
   if (totalPages <= 1) return null
 
   return (
     <div className="flex items-center justify-between px-4 py-3 bg-white border-t">
       <div className="text-sm text-gray-500">
-        Page {page} of {totalPages}
+        {t('common.pageOf', { page, totalPages })}
       </div>
       <div className="flex gap-2">
         <button

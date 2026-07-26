@@ -5,6 +5,7 @@ import Link from 'next/link'
 import Layout from '@/components/Layout/Layout'
 import api from '@/lib/api'
 import type { ApplicationListItem, PagedResult, ApiResponse } from '@/types'
+import { useTranslation } from '@/lib/I18nContext'
 
 const statusColors: Record<string, string> = {
   Draft: 'bg-gray-100 text-gray-700',
@@ -22,6 +23,7 @@ const statusColors: Record<string, string> = {
 }
 
 export default function ApplicationsPage() {
+  const { t } = useTranslation()
   const [applications, setApplications] = useState<ApplicationListItem[]>([])
   const [loading, setLoading] = useState(true)
   const [page, setPage] = useState(1)
@@ -49,45 +51,45 @@ export default function ApplicationsPage() {
       <div className="p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-2xl font-bold">Certificate Applications</h1>
+            <h1 className="text-2xl font-bold">{t('applications.title')}</h1>
             <p className="text-sm text-gray-500 mt-1">Manage certificate reissue and service applications</p>
           </div>
           <Link href="/applications/new" className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm">
-            New Application
+            {t('applications.newApplication')}
           </Link>
         </div>
 
         <div className="mb-4 flex gap-2 flex-wrap">
           <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1) }} className="border rounded-lg px-3 py-2 text-sm">
-            <option value="">All Statuses</option>
-            <option value="Submitted">Submitted</option>
-            <option value="DocumentVerification">Document Verification</option>
-            <option value="UnderReview">Under Review</option>
-            <option value="PoliceVerification">Police Verification</option>
-            <option value="SupervisorApproval">Supervisor Approval</option>
-            <option value="Approved">Approved</option>
-            <option value="Completed">Completed</option>
-            <option value="Rejected">Rejected</option>
+            <option value="">{t('common.all')}</option>
+            <option value="Submitted">{t('status.submitted')}</option>
+            <option value="DocumentVerification">{t('status.documentVerification')}</option>
+            <option value="UnderReview">{t('status.underReview')}</option>
+            <option value="PoliceVerification">{t('status.policeVerification')}</option>
+            <option value="SupervisorApproval">{t('status.supervisorApproval')}</option>
+            <option value="Approved">{t('status.approved')}</option>
+            <option value="Completed">{t('status.completed')}</option>
+            <option value="Rejected">{t('status.rejected')}</option>
           </select>
         </div>
 
         {loading ? (
-          <div className="text-center py-12 text-gray-500">Loading applications...</div>
+          <div className="text-center py-12 text-gray-500">{t('common.loading')}</div>
         ) : applications.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">No applications found</div>
+          <div className="text-center py-12 text-gray-500">{t('common.noData')}</div>
         ) : (
           <div className="bg-white rounded-lg border overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-gray-50 border-b">
                 <tr>
-                  <th className="text-left px-4 py-3 font-medium">Application #</th>
-                  <th className="text-left px-4 py-3 font-medium">Service</th>
-                  <th className="text-left px-4 py-3 font-medium">Citizen</th>
-                  <th className="text-left px-4 py-3 font-medium">Reason</th>
-                  <th className="text-left px-4 py-3 font-medium">Status</th>
+                  <th className="text-left px-4 py-3 font-medium">{t('applications.applicationNumber')}</th>
+                  <th className="text-left px-4 py-3 font-medium">{t('applications.serviceType')}</th>
+                  <th className="text-left px-4 py-3 font-medium">{t('applications.citizen')}</th>
+                  <th className="text-left px-4 py-3 font-medium">{t('applications.reissueReason')}</th>
+                  <th className="text-left px-4 py-3 font-medium">{t('common.status')}</th>
                   <th className="text-left px-4 py-3 font-medium">Police</th>
-                  <th className="text-left px-4 py-3 font-medium">Step</th>
-                  <th className="text-left px-4 py-3 font-medium">Created</th>
+                  <th className="text-left px-4 py-3 font-medium">{t('applications.currentStep')}</th>
+                  <th className="text-left px-4 py-3 font-medium">{t('common.date')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
@@ -108,13 +110,13 @@ export default function ApplicationsPage() {
                     </td>
                     <td className="px-4 py-3">
                       <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${statusColors[app.status] || 'bg-gray-100'}`}>{app.status}</span>
-                      {app.isOverdue && <span className="ml-1 text-red-500 text-xs">Overdue</span>}
+                      {app.isOverdue && <span className="ml-1 text-red-500 text-xs">{t('dashboard.overdue')}</span>}
                     </td>
                     <td className="px-4 py-3">
                       {app.policeApproved ? (
-                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">Approved</span>
+                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-700">{t('status.approved')}</span>
                       ) : app.status === 'PoliceVerification' ? (
-                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700">Pending</span>
+                        <span className="px-2 py-0.5 rounded text-xs font-medium bg-amber-100 text-amber-700">{t('status.pending')}</span>
                       ) : <span className="text-gray-400 text-xs">-</span>}
                     </td>
                     <td className="px-4 py-3 text-gray-500 text-xs">{app.currentStep || '-'}</td>
@@ -128,10 +130,10 @@ export default function ApplicationsPage() {
 
         {totalPages > 1 && (
           <div className="flex items-center justify-between mt-4">
-            <span className="text-sm text-gray-500">Page {page} of {totalPages} ({totalCount} total)</span>
+            <span className="text-sm text-gray-500">{t('common.pageOf', { current: page, total: totalPages })} ({totalCount} {t('common.total')})</span>
             <div className="flex gap-2">
-              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 border rounded text-sm disabled:opacity-50">Previous</button>
-              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-3 py-1 border rounded text-sm disabled:opacity-50">Next</button>
+              <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 border rounded text-sm disabled:opacity-50">{t('common.previous')}</button>
+              <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-3 py-1 border rounded text-sm disabled:opacity-50">{t('common.next')}</button>
             </div>
           </div>
         )}

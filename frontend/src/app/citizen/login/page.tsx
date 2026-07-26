@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { citizenLogin, isAuthenticated } from '@/lib/auth'
 import { Phone, Lock, Loader2, Shield } from 'lucide-react'
+import { useTranslation } from '@/lib/I18nContext'
 
 export default function CitizenLoginPage() {
   const router = useRouter()
@@ -12,6 +13,7 @@ export default function CitizenLoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [mounted, setMounted] = useState(false)
+  const { t } = useTranslation()
 
   useEffect(() => {
     setMounted(true)
@@ -44,8 +46,8 @@ export default function CitizenLoginPage() {
           <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
             <Shield className="text-green-600" size={32} />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Citizen Portal</h1>
-          <p className="text-gray-500 mt-2">Access government services online</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('citizen.dashboard')}</h1>
+          <p className="text-gray-500 mt-2">{t('citizen.welcome', { name: '' })}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -54,7 +56,7 @@ export default function CitizenLoginPage() {
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone Number</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.phoneNumber')}</label>
             <div className="relative">
               <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input
@@ -62,14 +64,14 @@ export default function CitizenLoginPage() {
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
-                placeholder="Enter your phone number"
+                placeholder={t('auth.phoneNumber')}
                 required
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">{t('auth.password')}</label>
             <div className="relative">
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
               <input
@@ -77,7 +79,7 @@ export default function CitizenLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 outline-none"
-                placeholder="Enter your password"
+                placeholder={t('auth.password')}
                 required
               />
             </div>
@@ -89,15 +91,15 @@ export default function CitizenLoginPage() {
             className="w-full bg-green-600 text-white py-2.5 rounded-lg font-medium hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
             {loading && <Loader2 size={18} className="animate-spin" />}
-            {loading ? 'Signing in...' : 'Sign In'}
+            {loading ? t('auth.loggingIn') : t('auth.loggingIn')}
           </button>
         </form>
 
         <div className="mt-6 text-center space-y-2">
           <p className="text-sm text-gray-500">
-            Don&apos;t have an account?{' '}
+            {t('auth.dontHaveAccount')}{' '}
             <a href="/citizen/register" className="text-green-600 hover:text-green-700 font-medium">
-              Register here
+              {t('auth.register')}
             </a>
           </p>
           <a href="/login" className="text-sm text-gray-400 hover:text-gray-600 inline-block">

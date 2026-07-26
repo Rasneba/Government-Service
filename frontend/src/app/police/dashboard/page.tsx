@@ -4,8 +4,11 @@ import { useRouter } from 'next/navigation'
 import api from '@/lib/api'
 import { policeLogout } from '@/lib/auth'
 import type { PoliceStats, ApplicationListItem, ApiResponse, PagedResult } from '@/types'
+import LanguageSwitcher from '@/components/common/LanguageSwitcher'
+import { useTranslation } from '@/lib/I18nContext'
 
 export default function PoliceDashboardPage() {
+  const { t } = useTranslation()
   const router = useRouter()
   const [stats, setStats] = useState<PoliceStats | null>(null)
   const [pendingApps, setPendingApps] = useState<ApplicationListItem[]>([])
@@ -25,7 +28,7 @@ export default function PoliceDashboardPage() {
     }).finally(() => setLoading(false))
   }, [router])
 
-  if (loading) return <div className="flex items-center justify-center min-h-screen text-slate-500">Loading...</div>
+  if (loading) return <div className="flex items-center justify-center min-h-screen text-slate-500">{t('common.loading')}</div>
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -34,17 +37,18 @@ export default function PoliceDashboardPage() {
           <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
           </svg>
-          <h1 className="text-lg font-bold">Police Verification Portal</h1>
+          <h1 className="text-lg font-bold">{t('police.title')}</h1>
         </div>
-        <button onClick={() => policeLogout()} className="text-sm text-slate-300 hover:text-white">Sign Out</button>
+        <button onClick={() => policeLogout()} className="text-sm text-slate-300 hover:text-white">{t('auth.logout')}</button>
+        <LanguageSwitcher />
       </nav>
 
       <div className="max-w-6xl mx-auto px-6 py-8">
-        <h2 className="text-xl font-bold text-slate-800 mb-6">Dashboard</h2>
+        <h2 className="text-xl font-bold text-slate-800 mb-6">{t('dashboard.title')}</h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <div className="bg-white rounded-xl shadow-sm border p-5">
-            <div className="text-sm text-slate-500">Pending Verifications</div>
+            <div className="text-sm text-slate-500">{t('police.pendingVerifications')}</div>
             <div className="text-3xl font-bold text-amber-600 mt-1">{stats?.pendingVerifications ?? 0}</div>
           </div>
           <div className="bg-white rounded-xl shadow-sm border p-5">
@@ -56,17 +60,17 @@ export default function PoliceDashboardPage() {
             <div className="text-3xl font-bold text-red-600 mt-1">{stats?.rejectedToday ?? 0}</div>
           </div>
           <div className="bg-white rounded-xl shadow-sm border p-5">
-            <div className="text-sm text-slate-500">Total Reviewed</div>
+            <div className="text-sm text-slate-500">{t('police.reviewed')}</div>
             <div className="text-3xl font-bold text-blue-600 mt-1">{stats?.totalReviewed ?? 0}</div>
           </div>
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border">
           <div className="px-6 py-4 border-b flex items-center justify-between">
-            <h3 className="font-semibold text-slate-800">Pending Police Verifications</h3>
+            <h3 className="font-semibold text-slate-800">{t('police.pendingVerifications')}</h3>
           </div>
           {pendingApps.length === 0 ? (
-            <div className="px-6 py-12 text-center text-slate-400">No pending verifications</div>
+            <div className="px-6 py-12 text-center text-slate-400">{t('common.noData')}</div>
           ) : (
             <div className="divide-y">
               {pendingApps.map(app => (
@@ -86,7 +90,7 @@ export default function PoliceDashboardPage() {
                   </div>
                   <div className="text-right">
                     <div className="text-xs text-slate-400">{new Date(app.createdAt).toLocaleDateString()}</div>
-                    {app.isOverdue && <span className="text-xs text-red-500 font-medium">Overdue</span>}
+                    {app.isOverdue && <span className="text-xs text-red-500 font-medium">{t('dashboard.overdue')}</span>}
                   </div>
                 </div>
               ))}

@@ -7,8 +7,10 @@ import DataTable from '@/components/common/DataTable'
 import { isAuthenticated } from '@/lib/auth'
 import api from '@/lib/api'
 import { Department } from '@/types'
+import { useTranslation } from '@/lib/I18nContext'
 
 export default function DepartmentsPage() {
+  const { t } = useTranslation()
   const router = useRouter()
   const [data, setData] = useState<Department[]>([])
   const [loading, setLoading] = useState(true)
@@ -26,17 +28,17 @@ export default function DepartmentsPage() {
   }
 
   const columns = [
-    { key: 'name', header: 'Name', render: (item: Department) => item.name },
+    { key: 'name', header: t('profile.name'), render: (item: Department) => item.name },
     { key: 'code', header: 'Code', render: (item: Department) => item.code || 'N/A' },
-    { key: 'org', header: 'Organization', render: (item: Department) => item.organizationName || 'N/A' },
-    { key: 'active', header: 'Status', render: (item: Department) => item.isActive ? 'Active' : 'Inactive' },
+    { key: 'org', header: t('nav.organizations'), render: (item: Department) => item.organizationName || 'N/A' },
+    { key: 'active', header: t('common.status'), render: (item: Department) => item.isActive ? 'Active' : 'Inactive' },
   ]
 
-  if (!mounted) return <Layout><div className="flex items-center justify-center h-64 text-gray-500">Loading...</div></Layout>
+  if (!mounted) return <Layout><div className="flex items-center justify-center h-64 text-gray-500">{t('common.loading')}</div></Layout>
 
   return (
     <Layout>
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Departments</h1>
+      <h1 className="text-2xl font-bold text-gray-800 mb-6">{t('nav.departments')}</h1>
       <DataTable columns={columns} data={data} loading={loading} />
     </Layout>
   )

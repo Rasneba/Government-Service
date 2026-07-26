@@ -1,4 +1,5 @@
 import { ReactNode } from 'react'
+import { useTranslation } from '@/lib/I18nContext'
 
 interface Column<T> {
   key: string
@@ -14,10 +15,12 @@ interface DataTableProps<T> {
 }
 
 export default function DataTable<T>({ columns, data, onRowClick, loading }: DataTableProps<T>) {
+  const { t } = useTranslation()
+
   if (loading) {
     return (
       <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
-        Loading...
+        {t('common.loading')}
       </div>
     )
   }
@@ -25,7 +28,7 @@ export default function DataTable<T>({ columns, data, onRowClick, loading }: Dat
   if (data.length === 0) {
     return (
       <div className="bg-white rounded-lg shadow p-8 text-center text-gray-500">
-        No data found
+        {t('common.noData')}
       </div>
     )
   }

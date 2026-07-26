@@ -3,8 +3,10 @@ import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import api from '@/lib/api'
 import type { ApplicationDetail, ApiResponse, WorkflowStepDisplay } from '@/types'
+import { useTranslation } from '@/lib/I18nContext'
 
 export default function PoliceApplicationReviewPage() {
+  const { t } = useTranslation()
   const router = useRouter()
   const params = useParams()
   const id = params.id as string
@@ -33,7 +35,7 @@ export default function PoliceApplicationReviewPage() {
     } catch (err) { alert('Failed to submit review') } finally { setSubmitting(false) }
   }
 
-  if (loading) return <div className="flex items-center justify-center min-h-screen text-slate-500">Loading...</div>
+  if (loading) return <div className="flex items-center justify-center min-h-screen text-slate-500">{t('common.loading')}</div>
   if (!app) return <div className="flex items-center justify-center min-h-screen text-red-500">Application not found</div>
 
   const currentStepIdx = app.workflowSteps.findIndex(s => s.executionStatus === 'InProgress')
@@ -46,7 +48,7 @@ export default function PoliceApplicationReviewPage() {
           <button onClick={() => router.push('/police/dashboard')} className="text-slate-300 hover:text-white">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
           </button>
-          <h1 className="text-lg font-bold">Review Application</h1>
+          <h1 className="text-lg font-bold">{t('police.reviewApplication')}</h1>
         </div>
       </nav>
 
@@ -72,45 +74,45 @@ export default function PoliceApplicationReviewPage() {
           </div>
 
           <div className="grid grid-cols-2 gap-4 text-sm">
-            <div><span className="text-slate-500">Citizen:</span> <span className="font-medium">{app.citizenName}</span></div>
-            <div><span className="text-slate-500">Phone:</span> <span className="font-medium">{app.citizenPhone}</span></div>
-            <div><span className="text-slate-500">Priority:</span> <span className="font-medium">{app.priority}</span></div>
-            <div><span className="text-slate-500">Fee:</span> <span className="font-medium">ETB {app.feeAmount}</span></div>
+            <div><span className="text-slate-500">{t('applications.citizen')}:</span> <span className="font-medium">{app.citizenName}</span></div>
+            <div><span className="text-slate-500">{t('profile.phone')}:</span> <span className="font-medium">{app.citizenPhone}</span></div>
+            <div><span className="text-slate-500">{t('applications.priority')}:</span> <span className="font-medium">{app.priority}</span></div>
+            <div><span className="text-slate-500">{t('services.fee')}:</span> <span className="font-medium">ETB {app.feeAmount}</span></div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h3 className="font-semibold text-slate-800 mb-3">Reissue Details</h3>
+              <h3 className="font-semibold text-slate-800 mb-3">{t('common.details')}</h3>
               <div className="space-y-3 text-sm">
-                <div className="flex justify-between"><span className="text-slate-500">Reissue Reason:</span><span className="font-medium text-amber-600">{app.reissueReason || 'N/A'}</span></div>
-                <div className="flex justify-between"><span className="text-slate-500">Original Cert Number:</span><span className="font-mono font-medium">{app.originalCertificateNumber || 'N/A'}</span></div>
+                <div className="flex justify-between"><span className="text-slate-500">{t('applications.reissueReason')}:</span><span className="font-medium text-amber-600">{app.reissueReason || 'N/A'}</span></div>
+                <div className="flex justify-between"><span className="text-slate-500">{t('applications.originalCertNumber')}:</span><span className="font-mono font-medium">{app.originalCertificateNumber || 'N/A'}</span></div>
                 {app.originalCertificateDetails && (
-                  <div><span className="text-slate-500">Details:</span><p className="mt-1 text-slate-700 bg-slate-50 p-3 rounded">{app.originalCertificateDetails}</p></div>
+                  <div><span className="text-slate-500">{t('common.details')}:</span><p className="mt-1 text-slate-700 bg-slate-50 p-3 rounded">{app.originalCertificateDetails}</p></div>
                 )}
-                <div className="flex justify-between"><span className="text-slate-500">Submitted:</span><span>{new Date(app.createdAt).toLocaleDateString()}</span></div>
+                <div className="flex justify-between"><span className="text-slate-500">{t('applications.submittedDate')}:</span><span>{new Date(app.createdAt).toLocaleDateString()}</span></div>
                 {app.dueDate && <div className="flex justify-between"><span className="text-slate-500">Due Date:</span><span>{new Date(app.dueDate).toLocaleDateString()}</span></div>}
               </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h3 className="font-semibold text-slate-800 mb-3">Subject & Description</h3>
+              <h3 className="font-semibold text-slate-800 mb-3">{t('applications.subject')}</h3>
               <p className="text-sm font-medium">{app.subject}</p>
               {app.description && <p className="text-sm text-slate-600 mt-2">{app.description}</p>}
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h3 className="font-semibold text-slate-800 mb-3">Uploaded Documents</h3>
+              <h3 className="font-semibold text-slate-800 mb-3">{t('applications.documents')}</h3>
               {app.documents.length === 0 ? (
-                <p className="text-sm text-slate-400">No documents uploaded</p>
+                <p className="text-sm text-slate-400">{t('common.noData')}</p>
               ) : (
                 <div className="space-y-2">
                   {app.documents.map(doc => (
                     <div key={doc.id} className="flex items-center justify-between p-2 bg-slate-50 rounded">
                       <span className="text-sm">{doc.fileName}</span>
                       <span className={`text-xs px-2 py-0.5 rounded ${doc.isVerified ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'}`}>
-                        {doc.isVerified ? 'Verified' : 'Pending'}
+                        {doc.isVerified ? t('status.approved') : t('status.pending')}
                       </span>
                     </div>
                   ))}
@@ -121,7 +123,7 @@ export default function PoliceApplicationReviewPage() {
 
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-sm border p-6">
-              <h3 className="font-semibold text-slate-800 mb-3">Workflow Progress</h3>
+              <h3 className="font-semibold text-slate-800 mb-3">{t('applications.workflow')}</h3>
               <div className="space-y-3">
                 {app.workflowSteps.map((step, idx) => (
                   <div key={step.id} className="flex items-center gap-3">
@@ -148,13 +150,13 @@ export default function PoliceApplicationReviewPage() {
 
             {isPoliceStep && (
               <div className="bg-white rounded-xl shadow-sm border p-6">
-                <h3 className="font-semibold text-slate-800 mb-3">Police Verification Review</h3>
+                <h3 className="font-semibold text-slate-800 mb-3">{t('status.policeVerification')}</h3>
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Verification Notes *</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">{t('police.verificationNotes')} *</label>
                   <textarea
                     value={reviewNotes} onChange={e => setReviewNotes(e.target.value)}
                     className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm"
-                    rows={4} required placeholder="Enter your verification findings, observations, and decision rationale..."
+                    rows={4} required placeholder={t('police.verificationNotes')}
                   />
                 </div>
                 <div className="flex gap-3 mt-4">
@@ -162,13 +164,13 @@ export default function PoliceApplicationReviewPage() {
                     onClick={() => handleReview(true)} disabled={submitting}
                     className="flex-1 bg-green-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-green-700 disabled:opacity-50"
                   >
-                    {submitting ? 'Processing...' : 'Approve & Forward'}
+                    {submitting ? t('common.loading') : t('police.approve')}
                   </button>
                   <button
                     onClick={() => handleReview(false)} disabled={submitting}
                     className="flex-1 bg-red-600 text-white py-2.5 rounded-lg text-sm font-medium hover:bg-red-700 disabled:opacity-50"
                   >
-                    {submitting ? 'Processing...' : 'Reject'}
+                    {submitting ? t('common.loading') : t('police.reject')}
                   </button>
                 </div>
               </div>
@@ -177,7 +179,7 @@ export default function PoliceApplicationReviewPage() {
             {!isPoliceStep && app.status !== 'Completed' && app.status !== 'Rejected' && (
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 text-center">
                 <p className="text-sm text-amber-700">This application is not currently at the Police Verification step.</p>
-                <p className="text-xs text-amber-500 mt-1">Current step: {app.currentStepName || 'N/A'}</p>
+                <p className="text-xs text-amber-500 mt-1">{t('applications.currentStep')}: {app.currentStepName || 'N/A'}</p>
               </div>
             )}
 
@@ -193,7 +195,7 @@ export default function PoliceApplicationReviewPage() {
             )}
 
             <button onClick={() => router.push('/police/dashboard')} className="w-full border border-slate-300 py-2.5 rounded-lg text-sm text-slate-700 hover:bg-slate-50">
-              Back to Dashboard
+              {t('common.back')}
             </button>
           </div>
         </div>
