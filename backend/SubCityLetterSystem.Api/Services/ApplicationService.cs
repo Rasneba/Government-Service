@@ -185,6 +185,8 @@ namespace SubCityLetterSystem.Api.Services
                     });
                 }
 
+                await _context.SaveChangesAsync();
+
                 var firstStep = workflow.Steps.First();
                 application.CurrentStepId = firstStep.Id;
 
